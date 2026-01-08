@@ -1,18 +1,50 @@
 # audio-loop
 
-AI-driven audio synthesis with verification feedback. Describe a sound, generate it, verify it matches.
+An experimental system to discover which audio features correlate with subjective sound descriptors.
 
-## Vision
+## The Problem
 
-Create a closed-loop system where Claude Code:
-1. Receives natural language sound descriptions ("fuzzy bass with wide stereo, rough then smooth")
-2. Generates SuperCollider synthesis code
-3. Renders audio to file
-4. Analyzes output with Python (librosa/Essentia) + spectrogram visualization
-5. Compares analysis to description criteria
-6. Iterates until verification passes
+When you say a sound is "fuzzy" or "warm" or "rough then smooth" - what does that actually mean in measurable terms?
 
-The key innovation: treating audio analysis as a "test suite" for generative sound code.
+This project explores that question by building a feedback loop:
+1. Describe a sound in natural language
+2. Claude generates SuperCollider code
+3. Render to audio file
+4. Analyze with Python (librosa) - extract 25+ features
+5. Compare analysis to description - does it match?
+6. If not, Claude adjusts and tries again
+
+The core hypothesis: **subjective audio descriptors can be mapped to combinations of measurable features**, and we can discover those mappings through iteration and A/B comparison.
+
+## What We're Trying to Learn
+
+The central research questions:
+
+1. **Which features matter for which descriptors?**
+   - "warm" might correlate with low spectral centroid - or maybe harmonic density - or both with weights
+   - "fuzzy" might be spectral flatness - or noise content - or something we haven't considered
+   - We don't know yet. That's the point.
+
+2. **Can Claude interpret spectrograms meaningfully?**
+   - Visual inspection adds information beyond numeric metrics
+   - But can Claude actually "read" a spectrogram? Needs validation.
+
+3. **How do we detect failure vs. "keep trying"?**
+   - When is Claude stuck in a dead-end vs. making progress?
+   - What signals indicate "this descriptor can't be verified with current features"?
+
+## The A/B Workflow
+
+When a descriptor mapping is uncertain:
+
+1. Claude generates two sound variants with different interpretations
+   - Version A: "warm" = centroid < 1kHz
+   - Version B: "warm" = centroid < 1.5kHz + high harmonic ratio
+2. Both get analyzed, you listen and pick which is "more warm"
+3. Winning interpretation gets recorded in tk as an experiment result
+4. Over time, patterns emerge about what features actually matter
+
+This is how we learn - not by defining upfront, but by comparing and refining.
 
 ## Requirements
 
@@ -24,67 +56,85 @@ The key innovation: treating audio analysis as a "test suite" for generative sou
 
 **Core Loop**
 - [ ] SuperCollider code generation from descriptions
-- [ ] Audio rendering via sclang CLI
-- [ ] Python analysis pipeline (25-30 features)
-- [ ] Spectrogram visualization for Claude inspection
-- [ ] Iterative refinement based on analysis feedback
+- [ ] Audio rendering via sclang CLI (write .scd, execute, capture .wav)
+- [ ] Python analysis pipeline with modular feature extraction
+- [ ] Spectrogram generation for visual inspection
+- [ ] Iteration loop with analysis-driven refinement
 
-**Analysis Features**
-- [ ] Spectral: centroid, rolloff, flux, flatness, bandwidth
-- [ ] Pitch: f0 tracking, harmonicity, inharmonicity
-- [ ] Amplitude: RMS, envelope shape, dynamics
-- [ ] Temporal: onset detection, attack/decay characteristics
-- [ ] Stereo: mid/side ratio, correlation, phase coherence, width
-- [ ] Perceptual: MFCCs, loudness, roughness
+**Analysis Features** (starting set, expect to add more)
+
+| Category | Features | Why |
+|----------|----------|-----|
+| Spectral | centroid, rolloff, flux, flatness, bandwidth, contrast | Brightness, texture, movement |
+| Pitch | f0 tracking, harmonicity, inharmonicity | Tonal vs noisy, tuning |
+| Amplitude | RMS, envelope (attack/decay/sustain/release), crest factor | Dynamics, punch |
+| Temporal | onset strength, tempo, rhythm regularity | Rhythmic character |
+| Stereo | mid/side ratio, L-R correlation, phase coherence | Width, imaging |
+| Perceptual | MFCCs, loudness (LUFS), roughness, sharpness | How humans hear it |
 
 **Descriptor System**
-- [ ] Python functions for descriptor verification (is_warm, is_bright, etc.)
-- [ ] Hybrid approach: formal vocabulary + Claude interpretation
-- [ ] Temporal descriptors (swells, fades, pulsing)
-- [ ] A/B comparison workflow for refining mappings
+- [ ] Python functions that take analysis dict, return confidence score (0-1, not boolean)
+- [ ] Initial vocabulary: warm, bright, dark, fuzzy, harsh, smooth, rough, wide, narrow, punchy, soft
+- [ ] Temporal modifiers: swelling, fading, pulsing, evolving, static
+- [ ] Mechanism for Claude to propose new features when descriptors don't map well
 
-**Recipe Templates**
-- [ ] Sound type organization: pads/, leads/, bass/, percussion/, fx/
-- [ ] Each template includes SC code + expected measurements
-- [ ] Context7 integration for SC documentation lookup
+**Experiment Tracking (tk)**
+- [ ] Each experiment = one attempt to map a descriptor to features
+- [ ] Record: descriptor, feature weights tried, audio file, user feedback
+- [ ] Query: "what have we learned about 'fuzzy'?"
 
-**Experiment Tracking**
-- [ ] tk tickets for tracking descriptor experiments
-- [ ] A/B comparison results
-- [ ] Feature evolution history
+**Reference Generation**
+- [ ] On-demand: Claude creates a "known warm" sound from SC templates
+- [ ] Analyze it, use as calibration target
+- [ ] No static library - generate fresh each time
 
-### Out of Scope
+### Out of Scope (v1)
 
-- Complex music/arrangement - focus on single sounds
-- GUI/web interface - CLI only, Claude Code as interface
-- Static reference library - generate references on demand
+- Multi-sound compositions or arrangements
+- GUI or web interface
+- Real-time synthesis (focus on offline render-analyze loop)
+- Pre-built "correct" mappings - we're discovering them
 
 ## Key Decisions
 
-| Decision | Rationale | Outcome |
-|----------|-----------|---------|
-| SuperCollider over Csound/Faust | Mature, real-time capable, good headless support | SC via sclang CLI |
-| External analysis (librosa) over SC built-in | Better visualization, more flexible, easier to extend | Python pipeline |
-| Full stereo analysis | Essential for modern sound design, "width" is common descriptor | Include from start |
-| Extensive features (25-30) | Can't discover what matters without having features to test | Comprehensive suite |
-| Python functions for descriptors | More programmable than static mappings, Claude can extend | Code over config |
-| tk for experiment tracking | Simple markdown files, easy to version and inspect | `.tickets/` |
-| A/B comparison for mapping refinement | Matches human perception, easier than absolute ratings | Comparative workflow |
-| Context7 for both reference + runtime | Build pattern library AND lookup docs during generation | Dual use |
-| Iterate until success | Autonomous refinement, only fail on hard errors | High autonomy |
-| Always explain verification reasoning | Transparency builds trust, helps debugging | Full reasoning |
+| Decision | Rationale |
+|----------|-----------|
+| SuperCollider via sclang CLI | Mature, scriptable, renders to file cleanly |
+| Python/librosa for analysis | Rich feature set, good visualization, easy to extend |
+| Confidence scores not booleans | "Close but too harsh" is useful signal; pass/fail loses nuance |
+| A/B comparison over ratings | "Which is warmer?" easier than "rate warmth 1-10" |
+| tk for experiments | Markdown files, git-tracked, queryable, simple |
+| Iterate until success OR dead-end | Autonomous but with escape hatch |
+| Always explain reasoning | Transparency for debugging and learning |
+
+## Open Questions
+
+Things we need to figure out during implementation:
+
+1. **Dead-end detection**: How many iterations with no improvement = give up?
+2. **Feature weighting**: Linear combination? Thresholds? Decision trees?
+3. **Spectrogram usefulness**: Does Claude's visual analysis add value over metrics?
+4. **Descriptor composability**: Can "warm AND punchy" be verified as conjunction?
+5. **Context window management**: Long iteration loops may need summarization
 
 ## Constraints
 
-- SuperCollider already installed
-- Python/librosa needs setup
-- macOS (darwin) platform
-- CLI-only workflow
+- SuperCollider installed and working
+- Python environment needs setup (librosa, numpy, matplotlib)
+- macOS platform
+- CLI workflow via Claude Code
+- Audio rendered to files (no real-time audio I/O needed)
 
 ## Success Criteria
 
-Proof of concept succeeds when:
-**Claude demonstrates iterative refinement** - generates a sound, analyzes it, identifies mismatch ("centroid too high"), adjusts code, tries again, succeeds.
+**Minimum viable success:**
+Claude generates a "warm pad with slow attack", analyzes it, finds centroid too high, adjusts filter cutoff, re-renders, confirms improvement, iterates until metrics match - and the result actually sounds warm when you listen.
+
+**Real success:**
+We have 5+ descriptors with validated feature mappings, documented in tk experiments, and Claude can reliably generate sounds matching novel combinations of those descriptors.
+
+**Stretch:**
+Claude proposes a new analysis feature we didn't think of because existing features couldn't capture a descriptor.
 
 ---
-*Last updated: 2026-01-07 after initialization*
+*Last updated: 2026-01-07 - revised to emphasize research/discovery nature*
