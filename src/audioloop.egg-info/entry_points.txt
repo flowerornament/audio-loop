@@ -1,0 +1,2 @@
+[console_scripts]
+audioloop = audioloop.cli:app
