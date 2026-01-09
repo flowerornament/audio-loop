@@ -12,6 +12,7 @@ from audioloop import __version__
 from audioloop.analyze import analyze as do_analyze, AnalysisError
 from audioloop.errors import format_error_human
 from audioloop.interpret import format_analysis_human
+from audioloop.play import play_audio, PlaybackError
 from audioloop.render import render as do_render
 
 app = typer.Typer(
@@ -214,3 +215,42 @@ def analyze(
         print(json.dumps(result.to_dict(), indent=2))
     else:
         console.print(format_analysis_human(result))
+
+
+@app.command()
+def play(
+    file: Path = typer.Argument(
+        ...,
+        help="Audio file to play (WAV)",
+        exists=False,  # We handle existence check ourselves for better error messages
+    ),
+) -> None:
+    """Play an audio file through the system speaker.
+
+    Uses macOS afplay for playback. Blocks until playback completes.
+    Press Ctrl+C to stop playback.
+
+    Examples:
+
+        audioloop play output.wav
+
+        audioloop play tests/fixtures/test_tone.wav
+    """
+    # Validate file exists
+    if not file.exists():
+        error_console.print(f"[red]Error:[/red] File not found: {file}")
+        raise typer.Exit(2)  # System error
+
+    if not file.is_file():
+        error_console.print(f"[red]Error:[/red] Not a file: {file}")
+        raise typer.Exit(2)  # System error
+
+    # Play audio
+    console.print(f"Playing: {file}")
+    try:
+        play_audio(file)
+    except PlaybackError as e:
+        error_console.print(f"[red]Playback error:[/red] {e}")
+        raise typer.Exit(1)
+
+    console.print(f"Played: {file}")
