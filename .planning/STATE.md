@@ -5,17 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-09)
 
 **Core value:** Give Claude detailed acoustic measurements to reason about sound
-**Current focus:** v1.1 Psychoacoustics COMPLETE - Ready for v2.0 planning
+**Current focus:** v1.1 SHIPPED - Ready for v2.0 planning
 
 ## Current Position
 
-**Milestone:** 2 (Psychoacoustics)
-**Phase:** 4 (Zwicker Model Integration)
-**Plan:** 2 of 2 in current phase
-**Status:** Phase complete
-**Last activity:** 2026-01-09 - Completed 04-02-PLAN.md
+**Milestone:** v1.1 Psychoacoustics SHIPPED
+**Phase:** Ready to plan v2.0
+**Status:** Between milestones
+**Last activity:** 2026-01-09 - v1.1 milestone archived
 
-Progress: 100% (1/1 phases complete in current milestone)
+Progress: v1.0 + v1.1 complete (4 phases, 7 plans total)
 
 ## Phase Progress
 
@@ -26,13 +25,13 @@ Progress: 100% (1/1 phases complete in current milestone)
 | 2 | Analysis Core | **complete** | completed |
 | 3 | Iteration Tools | **complete** | completed |
 
-### v1.1 Psychoacoustics (Current)
+### v1.1 Psychoacoustics SHIPPED
 | Phase | Name | Status | Research |
 |-------|------|--------|----------|
 | 4 | Zwicker Model Integration | **complete** | completed |
 
 ### v2.0 Advanced Features
-*Scope TBD after v1.1 complete*
+*Scope TBD - see ROADMAP.md for candidates*
 
 ## Accumulated Decisions
 
@@ -42,6 +41,8 @@ See: `.planning/PROJECT.md` for full decision log with outcomes.
 
 ## Recent Activity
 
+- 2026-01-09: **v1.1 SHIPPED** - Psychoacoustic metrics complete
+- 2026-01-09: Milestone 2 archived to milestones/v1.1-ROADMAP.md
 - 2026-01-09: Completed 04-02-PLAN.md - CLI psychoacoustic support
 - 2026-01-09: Completed 04-01-PLAN.md - Psychoacoustic metrics integrated
 - 2026-01-09: **v1.0 SHIPPED** - Working feedback loop complete

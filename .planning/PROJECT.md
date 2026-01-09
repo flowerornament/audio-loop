@@ -163,7 +163,7 @@ Objective measurements that Claude interprets:
 }
 ```
 
-*Note: Psychoacoustic metrics (roughness, sharpness, loudness) are planned for a future milestone.*
+*Note: Psychoacoustic metrics (roughness, sharpness, loudness) were added in v1.1 via MoSQITo/Zwicker model.*
 
 ### Spectrogram (Post-v1)
 
@@ -292,6 +292,11 @@ Not v1 scope, but worth considering if the core loop proves valuable.
 
 ## Requirements
 
+### Validated (v1.1)
+- [x] Psychoacoustic metrics (loudness, sharpness, roughness via MoSQITo) — v1.1
+- [x] `--no-psychoacoustic` flag for faster analysis — v1.1
+- [x] Human-readable interpretation of psychoacoustic metrics — v1.1
+
 ### Validated (v1.0)
 - [x] `audioloop render` - NRT rendering with both full and wrapped modes
 - [x] `audioloop analyze` - spectral and temporal feature extraction
@@ -299,9 +304,9 @@ Not v1 scope, but worth considering if the core loop proves valuable.
 - [x] `audioloop compare` - side-by-side delta analysis
 - [x] JSON output for all commands
 
-### Active (v1.1+)
+### Active (v2.0+)
 - [ ] `audioloop analyze --spectrogram` - spectrogram image generation
-- [ ] Psychoacoustic metrics (roughness, sharpness, loudness via MoSQITo)
+- [ ] Reference sound comparison
 
 ## Out of Scope
 
@@ -328,13 +333,14 @@ You can describe sounds with varying complexity and Claude reliably produces som
 **Stretch:**
 Iteration usually converges in 1-3 attempts. Claude handles complex multi-element descriptions ("techno kick with sidechain pumping on a pad").
 
-## Current State (v1.0)
+## Current State (v1.1)
 
 - **Shipped:** 2026-01-09
-- **LOC:** 1,868 Python
-- **Tech stack:** Python/typer/rich, librosa, SuperCollider (NRT mode)
+- **LOC:** 2,115 Python
+- **Tech stack:** Python/typer/rich, librosa, MoSQITo, SuperCollider (NRT mode)
 - **Commands:** render, analyze, play, compare
-- **Tests:** 39+ pytest tests
+- **Tests:** 65 pytest tests
+- **New in v1.1:** Psychoacoustic metrics (loudness/sones, sharpness/acum, roughness/asper)
 
 ## Key Decisions
 
@@ -346,6 +352,9 @@ Iteration usually converges in 1-3 attempts. Claude handles complex multi-elemen
 | Mean aggregation for spectral features | Single summary value simplifies Claude interpretation | Good |
 | Reference ranges, not judgments | Context-dependent interpretation left to user/Claude | Good |
 | >10% significance threshold | Filters noise, matches perceptual difference threshold | Good |
+| Direct MoSQITo function API | Simpler than Audio class for single-file analysis | Good |
+| Lazy import MoSQITo | Graceful fallback when not installed | Good |
+| --no-psychoacoustic flag | Opt-out pattern clearer than opt-in | Good |
 
 ---
-*Last updated: 2026-01-09 after v1.0 milestone*
+*Last updated: 2026-01-09 after v1.1 milestone*

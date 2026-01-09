@@ -3,10 +3,21 @@
 ## Milestones
 
 - [v1.0 Working Feedback Loop](milestones/v1.0-ROADMAP.md) (Phases 1-3) SHIPPED 2026-01-09
-- **v1.1 Psychoacoustics** Phases 4+ (planned)
+- [v1.1 Psychoacoustics](milestones/v1.1-ROADMAP.md) (Phase 4) SHIPPED 2026-01-09
 - v2.0 Advanced Features (TBD)
 
 ## Completed Milestones
+
+<details>
+<summary>v1.1 Psychoacoustics (Phase 4) SHIPPED 2026-01-09</summary>
+
+- [x] Phase 4: Zwicker Model Integration (2/2 plans) completed 2026-01-09
+
+**Delivered:** Perceptual audio metrics via MoSQITo/Zwicker model
+
+[Full details](milestones/v1.1-ROADMAP.md)
+
+</details>
 
 <details>
 <summary>v1.0 Working Feedback Loop (Phases 1-3) SHIPPED 2026-01-09</summary>
@@ -23,30 +34,9 @@
 
 ---
 
-## v1.1 Psychoacoustics (Complete)
-
-Add perceptual metrics that better capture how sounds *feel*, not just their signal properties.
-
----
-
-### Phase 4: Zwicker Model Integration - COMPLETE (2026-01-09)
-**Goal:** Psychoacoustic metrics via MoSQITo/Zwicker model
-
-**Delivered:**
-- Loudness (sones) - Zwicker loudness via MoSQITo
-- Sharpness (acum) - perception of high-frequency energy
-- Roughness (asper) - perception of rapid amplitude modulation
-- Integration into `analyze` output with graceful fallback
-- `--no-psychoacoustic` flag for faster analysis
-- Human-readable interpretation of psychoacoustic metrics
-
-**Note:** Fluctuation strength skipped (not implemented in MoSQITo). LUFS was already present from Phase 2.
-
----
-
 ## v2.0 Advanced Features (TBD)
 
-Scope to be defined after v1.1 is complete. Candidates:
+Scope to be defined. Candidates:
 
 - **Spectrogram visualization:** `--spectrogram out.png` for Claude's multimodal analysis
 - **Descriptor discovery:** A/B workflow, experiment tracking, learned mappings
@@ -66,4 +56,4 @@ Scope to be defined after v1.1 is complete. Candidates:
 
 ---
 
-*Last updated: 2026-01-09*
+*Last updated: 2026-01-09 after v1.1 milestone*

@@ -53,6 +53,23 @@ INTERPRETATIONS = {
         "down": "quieter",
         "up": "louder",
     },
+    # Psychoacoustic interpretations
+    "loudness_sone": {
+        "down": "quieter (perceived)",
+        "up": "louder (perceived)",
+    },
+    "loudness_sone_max": {
+        "down": "lower peak loudness",
+        "up": "higher peak loudness",
+    },
+    "sharpness_acum": {
+        "down": "duller/softer",
+        "up": "sharper/brighter",
+    },
+    "roughness_asper": {
+        "down": "smoother",
+        "up": "rougher/grittier",
+    },
 }
 
 
@@ -69,6 +86,11 @@ UNITS = {
     "correlation": "",
     "loudness_lufs": "LUFS",
     "duration_sec": "s",
+    # Psychoacoustic units
+    "loudness_sone": "sone",
+    "loudness_sone_max": "sone",
+    "sharpness_acum": "acum",
+    "roughness_asper": "asper",
 }
 
 
@@ -280,6 +302,7 @@ def print_comparison_human(result: ComparisonResult, console: Console) -> None:
         "temporal": [],
         "stereo": [],
         "loudness": [],
+        "psychoacoustic": [],
     }
 
     for key, delta in result.deltas.items():
@@ -289,6 +312,8 @@ def print_comparison_human(result: ComparisonResult, console: Console) -> None:
             categories["temporal"].append((key, delta))
         elif key.startswith("stereo"):
             categories["stereo"].append((key, delta))
+        elif key.startswith("psychoacoustic"):
+            categories["psychoacoustic"].append((key, delta))
         elif "loudness" in key or "lufs" in key.lower():
             categories["loudness"].append((key, delta))
 
@@ -320,6 +345,12 @@ def print_comparison_human(result: ComparisonResult, console: Console) -> None:
 
             # Format values
             metric_name = _get_metric_name(key)
+
+            # Add channel label for per-channel metrics
+            if ".left." in key:
+                metric_name += " (L)"
+            elif ".right." in key:
+                metric_name += " (R)"
             unit = delta.unit
 
             # Value formatting based on magnitude

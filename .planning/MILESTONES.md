@@ -1,5 +1,31 @@
 # Project Milestones: audio-loop
 
+## v1.1 Psychoacoustics (Shipped: 2026-01-09)
+
+**Delivered:** Perceptual audio metrics via MoSQITo/Zwicker model for loudness, sharpness, and roughness
+
+**Phases completed:** 4 (2 plans total)
+
+**Key accomplishments:**
+- Zwicker loudness (sones) via MoSQITo library integration
+- Sharpness (acum) for high-frequency energy perception
+- Roughness (asper) for amplitude modulation perception
+- Graceful fallback when MoSQITo unavailable (optional dependency)
+- `--no-psychoacoustic` flag for faster analysis
+- Human-readable interpretation with perceptual labels
+
+**Stats:**
+- 4 files created/modified in src/
+- 218 lines added (2,115 total Python)
+- 1 phase, 2 plans
+- Same day (2026-01-09)
+
+**Git range:** `feat(04-01)` → `feat(04-02)`
+
+**What's next:** v2.0 Advanced Features - spectrogram visualization, descriptor discovery, reference comparison
+
+---
+
 ## v1.0 Working Feedback Loop (Shipped: 2026-01-09)
 
 **Delivered:** Complete describe-render-analyze-listen-iterate workflow for AI-assisted sound design with SuperCollider
