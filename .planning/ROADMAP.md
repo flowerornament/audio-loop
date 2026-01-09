@@ -37,6 +37,8 @@ Add perceptual metrics that better capture how sounds *feel*, not just their sig
 - Sharpness (acum) - perception of high-frequency energy
 - Roughness (asper) - perception of rapid amplitude modulation
 - Integration into `analyze` output with graceful fallback
+- `--no-psychoacoustic` flag for faster analysis
+- Human-readable interpretation of psychoacoustic metrics
 
 **Note:** Fluctuation strength skipped (not implemented in MoSQITo). LUFS was already present from Phase 2.
 
@@ -60,7 +62,7 @@ Scope to be defined after v1.1 is complete. Candidates:
 | 1. Render Pipeline | v1.0 | 1/1 | Complete | 2026-01-09 |
 | 2. Analysis Core | v1.0 | 2/2 | Complete | 2026-01-09 |
 | 3. Iteration Tools | v1.0 | 2/2 | Complete | 2026-01-09 |
-| 4. Zwicker Model | v1.1 | 1/1 | Complete | 2026-01-09 |
+| 4. Zwicker Model | v1.1 | 2/2 | Complete | 2026-01-09 |
 
 ---
 
