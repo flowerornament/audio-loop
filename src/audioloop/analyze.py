@@ -202,11 +202,12 @@ def _compute_loudness_lufs(y: np.ndarray, sr: int) -> float:
     return float(loudness)
 
 
-def analyze(path: Path) -> AnalysisResult:
+def analyze(path: Path, skip_psychoacoustic: bool = False) -> AnalysisResult:
     """Analyze an audio file and extract features.
 
     Args:
         path: Path to WAV file.
+        skip_psychoacoustic: If True, skip slow psychoacoustic metrics computation.
 
     Returns:
         AnalysisResult with all extracted features.
@@ -285,9 +286,11 @@ def analyze(path: Path) -> AnalysisResult:
     else:
         loudness_lufs = _compute_loudness_lufs(y, sr)
 
-    # Compute psychoacoustic metrics (if MoSQITo available)
-    # Use original signal for best quality preprocessing
-    psychoacoustic = compute_psychoacoustic(y, sr) or {}
+    # Compute psychoacoustic metrics (if MoSQITo available and not skipped)
+    if skip_psychoacoustic:
+        psychoacoustic = {}
+    else:
+        psychoacoustic = compute_psychoacoustic(y, sr) or {}
 
     return AnalysisResult(
         file=str(path),

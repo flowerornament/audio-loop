@@ -183,6 +183,11 @@ def analyze(
         "-j",
         help="Output as JSON",
     ),
+    no_psychoacoustic: bool = typer.Option(
+        False,
+        "--no-psychoacoustic",
+        help="Skip psychoacoustic metrics (faster analysis)",
+    ),
 ) -> None:
     """Analyze an audio file and extract acoustic features.
 
@@ -206,7 +211,7 @@ def analyze(
 
     # Run analysis
     try:
-        result = do_analyze(file)
+        result = do_analyze(file, skip_psychoacoustic=no_psychoacoustic)
     except AnalysisError as e:
         error_console.print(f"[red]Analysis failed:[/red] {e}")
         raise typer.Exit(1)  # Analysis error
