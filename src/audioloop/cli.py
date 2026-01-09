@@ -10,6 +10,7 @@ from rich.console import Console
 
 from audioloop import __version__
 from audioloop.analyze import analyze as do_analyze, AnalysisError
+from audioloop.compare import compare_audio, format_comparison_human
 from audioloop.errors import format_error_human
 from audioloop.interpret import format_analysis_human
 from audioloop.play import play_audio, PlaybackError
@@ -254,3 +255,64 @@ def play(
         raise typer.Exit(1)
 
     console.print(f"Played: {file}")
+
+
+@app.command()
+def compare(
+    file_a: Path = typer.Argument(
+        ...,
+        help="First audio file (baseline)",
+        exists=False,  # We handle existence check ourselves
+    ),
+    file_b: Path = typer.Argument(
+        ...,
+        help="Second audio file (comparison)",
+        exists=False,  # We handle existence check ourselves
+    ),
+    json_output: bool = typer.Option(
+        False,
+        "--json",
+        "-j",
+        help="Output as JSON",
+    ),
+) -> None:
+    """Compare two audio files and show feature deltas.
+
+    Computes feature-by-feature differences between two audio files,
+    highlighting significant changes (>10%) with interpretive context.
+
+    Examples:
+
+        audioloop compare iteration-1.wav iteration-2.wav
+
+        audioloop compare before.wav after.wav --json
+    """
+    # Validate both files exist
+    if not file_a.exists():
+        error_console.print(f"[red]Error:[/red] File not found: {file_a}")
+        raise typer.Exit(2)  # System error
+
+    if not file_a.is_file():
+        error_console.print(f"[red]Error:[/red] Not a file: {file_a}")
+        raise typer.Exit(2)  # System error
+
+    if not file_b.exists():
+        error_console.print(f"[red]Error:[/red] File not found: {file_b}")
+        raise typer.Exit(2)  # System error
+
+    if not file_b.is_file():
+        error_console.print(f"[red]Error:[/red] Not a file: {file_b}")
+        raise typer.Exit(2)  # System error
+
+    # Run comparison
+    try:
+        result = compare_audio(file_a, file_b)
+    except AnalysisError as e:
+        error_console.print(f"[red]Comparison failed:[/red] {e}")
+        raise typer.Exit(1)  # Analysis error
+
+    # Output results
+    if json_output:
+        print(json.dumps(result.to_dict(), indent=2))
+    else:
+        console.print(format_comparison_human(result))
