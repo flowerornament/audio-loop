@@ -65,6 +65,10 @@ def render(
     """
     start_time = time.time()
 
+    # Convert output path to absolute - sclang runs with cwd set to SC app directory,
+    # so relative paths would resolve incorrectly
+    output_path = output_path.resolve()
+
     # Validate input file exists
     if not input_path.exists():
         return RenderResult(
