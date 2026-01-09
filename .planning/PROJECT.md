@@ -1,260 +1,282 @@
 # audio-loop
 
-An experimental system to discover which audio features correlate with subjective sound descriptors.
+A toolkit for describing sounds to Claude Code and getting them out of SuperCollider.
 
-## The Problem
+## The Goal
 
-When you say a sound is "fuzzy" or "warm" or "rough then smooth" - what does that actually mean in measurable terms?
+You describe a sound in a Claude Code conversation:
 
-This project explores that question by building a feedback loop:
-1. Describe a sound in natural language
-2. Claude generates SuperCollider code
-3. Render to audio file
-4. Analyze with Python (librosa) - extract 25+ features
-5. Compare analysis to description - does it match?
-6. If not, Claude adjusts and tries again
+> "a warm pad with slow attack, detuned oscillators, gentle filter movement"
 
-The core hypothesis: **subjective audio descriptors can be mapped to combinations of measurable features**, and we can discover those mappings through iteration and A/B comparison.
+Claude generates SuperCollider code, renders it, runs it through analysis, reviews the results, then you listen. If it's not right, you tell Claude what's off. Claude has both your feedback and the analysis data to inform adjustments. Iterate until it sounds how you want.
 
-## What We're Trying to Learn
+**The problem:** Claude can't hear. It generates code based on its understanding of synthesis, but has no way to verify whether the result actually sounds "warm" or has "gentle filter movement."
 
-The central research questions:
+**The solution:** Give Claude detailed acoustic measurements of the rendered audio. Combined with your feedback ("not warm enough", "attack is too fast"), Claude can reason about the gap between what it produced and what you wanted.
 
-1. **Which features matter for which descriptors?**
-   - "warm" might correlate with low spectral centroid - or maybe harmonic density - or both with weights
-   - "fuzzy" might be spectral flatness - or noise content - or something we haven't considered
-   - We don't know yet. That's the point.
+## Example Session
 
-2. **Can Claude interpret spectrograms meaningfully?**
-   - Visual inspection adds information beyond numeric metrics
-   - But can Claude actually "read" a spectrogram? Needs validation.
+A concrete example of the feedback loop:
 
-3. **How do we detect failure vs. "keep trying"?**
-   - When is Claude stuck in a dead-end vs. making progress?
-   - What signals indicate "this descriptor can't be verified with current features"?
+```
+You: "warm pad with slow attack"
 
-## The A/B Workflow
+Claude: writes SC code - filtered saw wave, 200ms attack,
+        low-pass at 2kHz
+        runs: audioloop render pad.scd
+        runs: audioloop analyze pad.wav
 
-When a descriptor mapping is uncertain:
+Analysis shows: centroid 1847 Hz, attack 180ms
 
-1. Claude generates two sound variants with different interpretations
-   - Version A: "warm" = centroid < 1kHz
-   - Version B: "warm" = centroid < 1.5kHz + high harmonic ratio
-2. Both get analyzed, you listen and pick which is "more warm"
-3. Winning interpretation gets recorded in tk as an experiment result
-4. Over time, patterns emerge about what features actually matter
+Claude: "Here's the first version. Centroid is around 1800 Hz,
+        attack is 180ms. Give it a listen."
 
-This is how we learn - not by defining upfront, but by comparing and refining.
+You: [listen] "Too bright, but the attack feels right"
 
-## Interaction Model
+Claude: sees centroid is high, your feedback confirms
+        lowers filter cutoff from 2kHz to 800Hz
+        re-renders, re-analyzes
 
-**Primary interface:** Claude Code conversation. User describes sounds in rich natural language:
+Analysis shows: centroid 612 Hz, attack 180ms
 
-> "two sine waves beating panned 30% left and right, fuzzy distortion, boards of canada effect, a kick drum 120bpm, kickdrum causes a pitch warble when it hits, 909 sound"
+Claude: "Brought the filter down. Centroid now at 612 Hz."
 
-Claude parses this, generates SuperCollider code, renders, analyzes, and iterates.
+You: [listen] "That's it, that's warm"
+```
 
-**The goal:** Give Claude the richest possible perceptual representation of audio so it can reason like a psychoacoustician - using knowledge about how sound works, how humans perceive it, masking effects, critical bands, consonance, texture. Compensation for the fact that LLMs can't hear audio directly.
+The measurements help Claude understand *what* to change. Your ears determine *whether* it worked.
 
-### CLI Toolkit
+## How It Works
+
+```
+You describe a sound
+        ↓
+Claude writes SuperCollider code
+        ↓
+audioloop renders to WAV
+        ↓
+audioloop analyzes the audio
+        ↓
+Claude reviews analysis
+        ↓
+You listen and give feedback
+        ↓
+Claude has: your feedback + analysis data
+        ↓
+Claude adjusts code, re-renders
+        ↓
+Iterate until you're satisfied
+```
+
+**You are ground truth.** The analysis helps Claude understand what it produced. Your ears determine whether it matches what you asked for. Both inform Claude's next adjustment.
+
+**Feedback is natural language.** You say "too bright" or "needs more punch" or "close but something's off." Claude interprets this against the analysis data to figure out what to adjust.
+
+## Why SuperCollider
+
+SuperCollider is expressive enough to synthesize almost anything - from simple sine waves to complex evolving textures. It's text-based (Claude can write it), scriptable (we can automate rendering), and has decades of sound design literature Claude can draw on.
+
+The question isn't whether SC *can* make the sounds - it's whether Claude can learn to drive it effectively through iteration.
+
+## The Core Bet
+
+Acoustic measurements help Claude understand what it produced. Your feedback tells Claude whether it's right. Together, these let Claude make informed adjustments.
+
+The adjustments might be small (tweak a filter cutoff) or large (try a completely different synthesis approach). "Warmer" might mean lowering a filter - or it might mean switching from FM to subtractive synthesis, or adding harmonics, or restructuring the entire signal chain.
+
+Claude brings its knowledge of synthesis and psychoacoustics. The analysis gives Claude concrete data about what the sound actually is. Your ears are the final judge. Through iteration, Claude learns what works.
+
+## When Things Go Wrong
+
+**Syntax errors:** Claude sees the error message from sclang, fixes the code, tries again.
+
+**Silence or garbage:** Analysis shows near-zero RMS or extreme values. Claude recognizes something went wrong structurally, not just parametrically.
+
+**Not converging:** After several iterations, still not right. Options:
+- You give more specific feedback ("the low end is fine, it's the mids that are harsh")
+- Try a fundamentally different approach (different oscillator, different structure)
+- Accept "close enough" or recognize this description needs more work
+
+**Contradictory descriptions:** "Quiet but loud" - Claude asks for clarification or interprets creatively ("quiet spectrally but loud dynamically?").
+
+The loop handles most failures naturally. Claude Code already knows how to debug, retry, and ask for help.
+
+## When You're Done
+
+Sound is good. What then?
+
+The .scd and .wav files are in your repository. You might:
+- Keep iterating on variations
+- Move to a "finished" folder
+- Use the SC code as a starting point for something else
+- Come back later and refine
+
+File organization conventions will emerge through use.
+
+## The CLI Toolkit
 
 Single entry point: `audioloop <command>`
 
 | Command | Purpose |
 |---------|---------|
-| `audioloop render <file.scd>` | Render SC code to wav |
-| `audioloop analyze <file.wav>` | Rich analysis with interpretation |
-| `audioloop spectrogram <file.wav>` | ASCII/Unicode spectrogram |
-| `audioloop play <file.wav>` | Auto-open in system player |
-| `audioloop compare <a.wav> <b.wav>` | Side-by-side analysis |
-| `audioloop session start\|list\|show` | Session management |
+| `audioloop render <file.scd>` | Execute SC code, capture WAV, return errors |
+| `audioloop analyze <file.wav>` | Acoustic analysis |
+| `audioloop analyze <file.wav> --spectrogram out.png` | Include spectrogram image |
+| `audioloop play <file.wav>` | Open in system audio player |
+| `audioloop compare <a.wav> <b.wav>` | Side-by-side analysis (for A/B or reference comparison) |
 
-All commands output structured data that Claude can parse and present.
+All commands output JSON for Claude to parse. Human-readable format with `--human`.
 
 ### Analysis Output
 
-The analysis is **ammunition for reasoning**, not just data:
+Objective measurements that Claude interprets:
 
-```
-SPECTRAL PROFILE
-  Centroid: 847 Hz (warm territory - typical pads 500-1500Hz)
-  Rolloff: 2.1 kHz
-  Flatness: 0.12 (tonal, not noisy)
-  ▁▂▃▅▇▅▃▂▁ spectral shape
-
-TEMPORAL ENVELOPE
-  Attack: 48ms (slow - comparable to string section)
-  ▁▂▄▇███▇▆▅▄▃▂▁ amplitude envelope
-
-PSYCHOACOUSTIC
-  Roughness: 0.23 (mild texture)
-  Sharpness: 0.8 sone (not piercing)
-  Fluctuation: 0.4 (subtle movement)
-```
-
-Key features:
-- **Baked-in interpretation** - values include context ("warm territory for pads")
-- **Psychoacoustic metrics** - roughness, sharpness, fluctuation strength, tonality (Zwicker model)
-- **Sparklines** for time-series data + summary stats
-- **ASCII spectrogram** inline
-- **Optional `--compare-to <reference>`** for benchmarks
-- **Summary errors**, `--verbose` for full diagnostics
-
-### SuperCollider Code Format
-
-SC code includes `// EXPECT:` comments for verification:
-
-```supercollider
-// EXPECT: centroid < 1000Hz (warm pad territory)
-sig = LPF.ar(sig, cutoff);
-
-// EXPECT: attack_time > 40ms (slow, string-like)
-env = Env.perc(attackTime, releaseTime);
-
-// EXPECT: stereo_width > 0.6 (wide but not extreme)
-sig = Splay.ar(sig, spread: 0.7);
+```json
+{
+  "file": "sound.wav",
+  "duration_sec": 4.2,
+  "sample_rate": 48000,
+  "spectral": {
+    "centroid_hz": 847,
+    "rolloff_hz": 2100,
+    "flatness": 0.12,
+    "bandwidth_hz": 1200
+  },
+  "temporal": {
+    "attack_ms": 48,
+    "rms": 0.23,
+    "crest_factor": 4.2
+  },
+  "psychoacoustic": {
+    "roughness_asper": 0.23,
+    "sharpness_acum": 0.8,
+    "loudness_lufs": -14.2
+  },
+  "stereo": {
+    "width": 0.72,
+    "correlation": 0.85
+  }
+}
 ```
 
-Analysis output references these:
-```
-Verification:
-  Line 4: centroid < 1000Hz → 847Hz ✓
-  Line 7: attack_time > 40ms → 48ms ✓
-  Line 10: stereo_width > 0.6 → 0.72 ✓
-```
+### Spectrogram
 
-### Sessions
+`--spectrogram out.png` generates an image Claude can read directly (multimodal). Claude can see harmonic structure, transients, frequency evolution - potentially more informative than numeric features alone.
 
-Group iterations for one sound request:
-- Original prompt
-- Iteration count
-- Final result
-- Minimal - full history reconstructable from git
+### Error Handling
 
-### Iteration Visibility
+When SuperCollider code has errors, `render` captures stdout/stderr:
 
-Claude narrates everything:
-```
-Iteration 2:
-  [spectrogram]
-  centroid: 1847 Hz (target: <1000 Hz) ✗
-  stereo width: 0.72 (target: >0.6) ✓
-
-  Problem: Still too bright. Lowering filter cutoff 2kHz → 1.2kHz...
+```json
+{
+  "success": false,
+  "error": "ERROR: syntax error, unexpected BINOP\n  in file 'sound.scd'\n  line 12 char 5",
+  "stdout": "..."
+}
 ```
 
-### Feedback
+## Scope
 
-After listening:
-- Checklist for known descriptors ("Is it warm enough?")
-- Freeform for anything else ("Too harsh in the highs")
-- Both combined
+**As general as possible.** The goal is arbitrary sound descriptions:
+
+- "fuzzy sine wave"
+- "warm pad with slow attack"
+- "909 kick drum"
+- "ambient texture with slow evolution"
+- "make a techno track"
+
+v1 may not achieve full generality, but that's the direction. We start with what works and expand.
+
+## Architecture Note: SC Process Management
+
+The `audioloop render` command needs to:
+- Manage the SuperCollider/sclang process
+- Capture stdout for logging and error reporting
+- Get rendered audio into the Python toolchain for analysis
+
+This likely means a server or process manager sitting between the CLI and sclang. Multiple architectural approaches are possible - detailed design TBD in implementation planning.
+
+## A/B Testing (Development Only)
+
+During development, A/B testing validates the analysis toolkit:
+
+1. Claude generates two sound variants
+2. You listen and identify which better matches what you asked for
+3. We see whether the analysis data correctly predicted your preference
+
+This helps tune analysis parameters. It's not part of normal use - normal use is just the feedback loop (describe → render → listen → adjust).
+
+## Analysis Features
+
+| Category | Features | What They Measure |
+|----------|----------|-------------------|
+| Spectral | centroid, rolloff, flux, flatness, bandwidth | Frequency content, brightness, texture |
+| Pitch | f0 tracking, harmonicity | Tuning, tonal quality |
+| Amplitude | RMS, envelope, crest factor | Dynamics, attack/sustain |
+| Temporal | onset strength, tempo | Rhythmic content |
+| Stereo | mid/side ratio, L-R correlation | Width, imaging |
+| Perceptual | loudness (LUFS), roughness, sharpness | Human hearing response |
+
+**Why psychoacoustic metrics?** Roughness, sharpness, and loudness (via MoSQITo/Zwicker model) attempt to measure *perception*, not just signal properties. "Harsh" is better captured by roughness than by any single spectral feature.
+
+## Technical Stack
+
+| Component | Technology | Why |
+|-----------|------------|-----|
+| Sound synthesis | SuperCollider via sclang | Expressive, text-based, scriptable |
+| Audio analysis | Python/librosa + MoSQITo | Feature extraction + psychoacoustics |
+| CLI | Python/typer | Simple, good for JSON output |
+| SC process management | TBD | Needs design work |
+
+## Assumptions to Validate
+
+- **Claude can write working SuperCollider code.** Likely true, and the error feedback loop helps it improve.
+- **Acoustic measurements help Claude make better adjustments.** Core bet. Your feedback is ground truth; measurements help Claude understand what to change.
+- **Spectrogram images provide useful information.** Claude is multimodal - does visual analysis actually help?
+- **The feature-to-vocabulary mapping is learnable.** Can Claude reliably connect "warm" to centroid through iteration?
+
+## Future Considerations
+
+**Learning over time:** Within a conversation, Claude naturally learns your vocabulary. Cross-session learning would require explicit note-taking - Claude recording what interpretations worked for you.
+
+**Reference sounds:** "Make it sound like this [reference.wav]" - Claude analyzes both reference and attempts, comparing features. Valuable when you have a specific target.
+
+Not v1 scope, but worth considering if the core loop proves valuable.
 
 ## Requirements
 
-### Validated
-
-(None yet - ship to validate)
-
-### Active
-
 **Core Loop**
-- [ ] SuperCollider code generation from descriptions
-- [ ] Audio rendering via sclang CLI (write .scd, execute, capture .wav)
-- [ ] Python analysis pipeline with modular feature extraction
-- [ ] Spectrogram generation (ASCII + optional PNG)
-- [ ] Iteration loop with analysis-driven refinement
+- [ ] `audioloop render` - SC process management, WAV capture, error reporting
+- [ ] `audioloop analyze` - acoustic feature extraction
+- [ ] `audioloop analyze --spectrogram` - spectrogram image generation
+- [ ] `audioloop play` - system audio player
+- [ ] `audioloop compare` - side-by-side analysis
+- [ ] JSON output for all commands
 
-**CLI Toolkit** (`audioloop` command)
-- [ ] `render` - execute SC code, capture wav output
-- [ ] `analyze` - full analysis with baked-in interpretation
-- [ ] `spectrogram` - ASCII/Unicode spectrogram
-- [ ] `play` - auto-open in system player
-- [ ] `compare` - side-by-side analysis of two files
-- [ ] `session` - start/list/show sessions
-- [ ] Structured output (JSON) for Claude to parse
-- [ ] `--verbose` flag for detailed diagnostics
-- [ ] `--compare-to <ref>` for benchmark comparison
+## Out of Scope (v1)
 
-**Analysis Features** (starting set, expect to add more)
-
-| Category | Features | Why |
-|----------|----------|-----|
-| Spectral | centroid, rolloff, flux, flatness, bandwidth, contrast | Brightness, texture, movement |
-| Pitch | f0 tracking, harmonicity, inharmonicity | Tonal vs noisy, tuning |
-| Amplitude | RMS, envelope (attack/decay/sustain/release), crest factor | Dynamics, punch |
-| Temporal | onset strength, tempo, rhythm regularity | Rhythmic character |
-| Stereo | mid/side ratio, L-R correlation, phase coherence | Width, imaging |
-| Perceptual | MFCCs, loudness (LUFS), roughness, sharpness, fluctuation, tonality | Zwicker psychoacoustic model |
-
-**Descriptor System**
-- [ ] Python functions that take analysis dict, return confidence score (0-1, not boolean)
-- [ ] Initial vocabulary: warm, bright, dark, fuzzy, harsh, smooth, rough, wide, narrow, punchy, soft
-- [ ] Temporal modifiers: swelling, fading, pulsing, evolving, static
-- [ ] Mechanism for Claude to propose new features when descriptors don't map well
-
-**Experiment Tracking (tk)**
-- [ ] Each experiment = one attempt to map a descriptor to features
-- [ ] Record: descriptor, feature weights tried, audio file, user feedback
-- [ ] Query: "what have we learned about 'fuzzy'?"
-
-**Reference Generation**
-- [ ] On-demand: Claude creates a "known warm" sound from SC templates
-- [ ] Analyze it, use as calibration target
-- [ ] No static library - generate fresh each time
-
-### Out of Scope (v1)
-
-- Multi-sound compositions or arrangements
 - GUI or web interface
-- Real-time synthesis (focus on offline render-analyze loop)
-- Pre-built "correct" mappings - we're discovering them
-
-## Key Decisions
-
-| Decision | Rationale |
-|----------|-----------|
-| SuperCollider via sclang CLI | Mature, scriptable, renders to file cleanly |
-| Python/librosa for analysis | Rich feature set, good visualization, easy to extend |
-| Python (textual/rich) for CLI | Modern TUI capabilities, matches analysis stack |
-| Zwicker psychoacoustic model | Go deep on human perception, not just DSP metrics |
-| Baked-in interpretation | Analysis includes context, not just raw numbers |
-| EXPECT comments in SC code | Verification targets inline with implementation |
-| Confidence scores not booleans | "Close but too harsh" is useful signal; pass/fail loses nuance |
-| A/B comparison over ratings | "Which is warmer?" easier than "rate warmth 1-10" |
-| tk for experiments | Markdown files, git-tracked, queryable, simple |
-| Minimal sessions | Track prompt + iterations + result; git has full history |
-| Narrate everything | Full transparency during iteration |
-| Iterate until success OR dead-end | Autonomous but with escape hatch |
-
-## Open Questions
-
-Things we need to figure out during implementation:
-
-1. **Dead-end detection**: How many iterations with no improvement = give up?
-2. **Feature weighting**: Linear combination? Thresholds? Decision trees?
-3. **Spectrogram usefulness**: Does Claude's visual analysis add value over metrics?
-4. **Descriptor composability**: Can "warm AND punchy" be verified as conjunction?
-5. **Context window management**: Long iteration loops may need summarization
+- Real-time synthesis
+- Pre-built sound presets
+- Cross-session vocabulary learning
 
 ## Constraints
 
 - SuperCollider installed and working
-- Python environment needs setup (librosa, numpy, matplotlib)
 - macOS platform
-- CLI workflow via Claude Code
-- Audio rendered to files (no real-time audio I/O needed)
+- Python environment (librosa, MoSQITo, etc.)
+- Claude Code CLI workflow
 
 ## Success Criteria
 
-**Minimum viable success:**
-Claude generates a "warm pad with slow attack", analyzes it, finds centroid too high, adjusts filter cutoff, re-renders, confirms improvement, iterates until metrics match - and the result actually sounds warm when you listen.
+**Minimum viable:**
+You say "warm pad with slow attack." Claude generates code, renders, analyzes, you listen, say "too bright," Claude sees the high centroid, adjusts the filter, re-renders, and the result actually sounds warm.
 
 **Real success:**
-We have 5+ descriptors with validated feature mappings, documented in tk experiments, and Claude can reliably generate sounds matching novel combinations of those descriptors.
+You can describe sounds with varying complexity and Claude reliably produces something that matches - iterating as needed until you're satisfied.
 
 **Stretch:**
-Claude proposes a new analysis feature we didn't think of because existing features couldn't capture a descriptor.
+Iteration usually converges in 1-3 attempts. Claude handles complex multi-element descriptions ("techno kick with sidechain pumping on a pad").
 
 ---
-*Last updated: 2026-01-08 - added interaction model and CLI toolkit*
+*Last updated: 2026-01-09*

@@ -1,59 +1,97 @@
 # audio-loop Roadmap
 
-## Milestone 1: Core System
+## Milestone 1: Working Feedback Loop
 
-### Phase 1: Core Infrastructure
-**Goal:** CLI skeleton + SuperCollider rendering pipeline
+The goal is a complete describe→render→analyze→listen→iterate workflow. After this milestone, you can describe sounds to Claude, have them rendered and analyzed, listen, provide feedback, and iterate.
+
+---
+
+### Phase 1: Render Pipeline
+**Goal:** Execute SuperCollider code and capture rendered audio
 
 **Deliverables:**
 - `audioloop` CLI entry point (Python/typer)
 - `audioloop render <file.scd>` command
-- SC code execution via sclang subprocess
+- SC code execution via sclang subprocess (NRT mode)
 - WAV file capture and validation
-- Basic error handling for SC failures
+- Error handling for SC compilation/runtime failures
+- JSON output for Claude parsing, `--human` flag for readable output
 
-**Research:** None
+**Technical Challenges:**
+- sclang subprocess management (exit behavior, compilation errors)
+- macOS path handling (sclang in app bundle)
+- Headless operation (QT_QPA_PLATFORM=offscreen)
+
+**Research:** Completed (see `.planning/phases/01-infrastructure/RESEARCH.md`)
 
 ---
 
-### Phase 2: Analysis Pipeline
-**Goal:** Feature extraction and rich output formatting
+### Phase 2: Analysis Core
+**Goal:** Extract acoustic features Claude can reason about
 
 **Deliverables:**
 - `audioloop analyze <file.wav>` command
-- librosa-based feature extraction (spectral, temporal, perceptual)
-- Structured JSON output for Claude parsing
-- Human-readable formatted output with sparklines
-- `audioloop spectrogram` (ASCII representation)
-- Zwicker psychoacoustic metrics (roughness, sharpness, fluctuation)
+- librosa-based feature extraction:
+  - Spectral: centroid, rolloff, flatness, bandwidth, flux
+  - Temporal: RMS, crest factor, attack time, envelope
+  - Pitch: f0 tracking, harmonicity
+  - Stereo: width, L-R correlation
+- Structured JSON output matching PROJECT.md schema
+- Human-readable output with sparklines for time-varying features
 
-**Research:** Zwicker model implementation options
+**Not in this phase:**
+- Psychoacoustic metrics (Milestone 2)
+- Spectrogram visualization (Milestone 3)
 
----
-
-### Phase 3: Feedback Loop
-**Goal:** Iteration with EXPECT verification
-
-**Deliverables:**
-- Parse `// EXPECT:` comments from SC code
-- Verification engine comparing expectations to analysis
-- `audioloop compare <a.wav> <b.wav>` for side-by-side
-- `audioloop play <file.wav>` for system player
-- Session management (`audioloop session start|list|show`)
-- Iteration narration format
-
-**Research:** None
+**Research:** Completed (see `.planning/phases/02-analysis/RESEARCH.md`)
 
 ---
 
-### Phase 4: Descriptor Discovery
-**Goal:** A/B workflow and experiment tracking
+### Phase 3: Iteration Tools
+**Goal:** Complete the loop with playback and comparison
 
 **Deliverables:**
-- Descriptor functions (warm, bright, fuzzy, etc.) returning confidence scores
-- A/B comparison workflow
-- Experiment tracking via tk (markdown files)
-- Query interface for learned mappings
-- Reference sound generation on-demand
+- `audioloop play <file.wav>` - system audio playback (afplay on macOS)
+- `audioloop compare <a.wav> <b.wav>` - feature-by-feature delta analysis
+- Comparison output optimized for Claude interpretation:
+  - Direction indicators (up/down/unchanged)
+  - Significance flags (>10% change)
+  - Interpretive context ("darker/warmer", "snappier attack")
+- Delta highlighting for iteration feedback
 
-**Research:** tk experiment file format
+**Research:** Completed (see `.planning/phases/03-feedback-loop/RESEARCH.md`)
+
+---
+
+## Milestone 2: Psychoacoustics
+
+Add perceptual metrics that better capture how sounds *feel*, not just their signal properties.
+
+---
+
+### Phase 4: Zwicker Model Integration
+**Goal:** Psychoacoustic metrics via MoSQITo/Zwicker model
+
+**Deliverables:**
+- Roughness (asper) - perception of rapid amplitude modulation
+- Sharpness (acum) - perception of high-frequency energy
+- Fluctuation strength - perception of slow modulation
+- LUFS loudness measurement
+- Integration into `analyze` output
+
+**Research:** Required - evaluate MoSQITo vs mosqito vs custom implementation
+
+---
+
+## Milestone 3: Advanced Features (TBD)
+
+Scope to be defined after Milestones 1-2 are complete. Candidates:
+
+- **Spectrogram visualization:** `--spectrogram out.png` for Claude's multimodal analysis
+- **Descriptor discovery:** A/B workflow, experiment tracking, learned mappings
+- **Reference comparison:** "Make it sound like [reference.wav]"
+- **Temporal evolution:** Beat/tempo tracking, feature evolution over time
+
+---
+
+*Last updated: 2026-01-09*
