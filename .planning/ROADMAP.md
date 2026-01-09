@@ -6,23 +6,27 @@ The goal is a complete describe→render→analyze→listen→iterate workflow. 
 
 ---
 
-### Phase 1: Render Pipeline
+### Phase 1: Render Pipeline - COMPLETE
 **Goal:** Execute SuperCollider code and capture rendered audio
+**Completed:** 2026-01-09 | [Summary](.planning/phases/01-render-pipeline/01-SUMMARY.md)
 
 **Deliverables:**
 - `audioloop` CLI entry point (Python/typer)
-- `audioloop render <file.scd>` command
+- `audioloop render <file.scd>` command with two modes:
+  - Full NRT mode (for complex sounds with custom timing)
+  - Simple function wrapping mode (for quick iteration with `--duration`)
+- `__OUTPUT_PATH__` placeholder convention
 - SC code execution via sclang subprocess (NRT mode)
 - WAV file capture and validation
 - Error handling for SC compilation/runtime failures
-- JSON output for Claude parsing, `--human` flag for readable output
+- JSON output for Claude parsing
 
 **Technical Challenges:**
 - sclang subprocess management (exit behavior, compilation errors)
 - macOS path handling (sclang in app bundle)
 - Headless operation (QT_QPA_PLATFORM=offscreen)
 
-**Research:** Completed (see `.planning/phases/01-infrastructure/RESEARCH.md`)
+**Research:** Completed (see `.planning/phases/01-render-pipeline/RESEARCH.md`)
 
 ---
 
@@ -32,18 +36,18 @@ The goal is a complete describe→render→analyze→listen→iterate workflow. 
 **Deliverables:**
 - `audioloop analyze <file.wav>` command
 - librosa-based feature extraction:
-  - Spectral: centroid, rolloff, flatness, bandwidth, flux
-  - Temporal: RMS, crest factor, attack time, envelope
-  - Pitch: f0 tracking, harmonicity
-  - Stereo: width, L-R correlation
+  - Spectral (per-channel L/R): centroid, rolloff, flatness, bandwidth
+  - Temporal: RMS, crest factor, attack time
+  - Stereo: width, L-R correlation, per-channel deltas
 - Structured JSON output matching PROJECT.md schema
-- Human-readable output with sparklines for time-varying features
+- Human-readable output with summary interpretation
 
 **Not in this phase:**
 - Psychoacoustic metrics (Milestone 2)
 - Spectrogram visualization (Milestone 3)
+- Temporal evolution features (beat tracking, pitch contours) - future
 
-**Research:** Completed (see `.planning/phases/02-analysis/RESEARCH.md`)
+**Research:** Completed (see `.planning/phases/02-analysis-core/RESEARCH.md`)
 
 ---
 
@@ -59,7 +63,7 @@ The goal is a complete describe→render→analyze→listen→iterate workflow. 
   - Interpretive context ("darker/warmer", "snappier attack")
 - Delta highlighting for iteration feedback
 
-**Research:** Completed (see `.planning/phases/03-feedback-loop/RESEARCH.md`)
+**Research:** Completed (see `.planning/phases/03-iteration-tools/RESEARCH.md`)
 
 ---
 
