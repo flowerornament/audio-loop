@@ -23,23 +23,22 @@
 
 ---
 
-## v1.1 Psychoacoustics (In Progress)
+## v1.1 Psychoacoustics (Complete)
 
 Add perceptual metrics that better capture how sounds *feel*, not just their signal properties.
 
 ---
 
-### Phase 4: Zwicker Model Integration
+### Phase 4: Zwicker Model Integration - COMPLETE (2026-01-09)
 **Goal:** Psychoacoustic metrics via MoSQITo/Zwicker model
 
-**Deliverables:**
-- Roughness (asper) - perception of rapid amplitude modulation
+**Delivered:**
+- Loudness (sones) - Zwicker loudness via MoSQITo
 - Sharpness (acum) - perception of high-frequency energy
-- Fluctuation strength - perception of slow modulation
-- LUFS loudness measurement
-- Integration into `analyze` output
+- Roughness (asper) - perception of rapid amplitude modulation
+- Integration into `analyze` output with graceful fallback
 
-**Research:** Required - evaluate MoSQITo vs mosqito vs custom implementation
+**Note:** Fluctuation strength skipped (not implemented in MoSQITo). LUFS was already present from Phase 2.
 
 ---
 
@@ -61,7 +60,7 @@ Scope to be defined after v1.1 is complete. Candidates:
 | 1. Render Pipeline | v1.0 | 1/1 | Complete | 2026-01-09 |
 | 2. Analysis Core | v1.0 | 2/2 | Complete | 2026-01-09 |
 | 3. Iteration Tools | v1.0 | 2/2 | Complete | 2026-01-09 |
-| 4. Zwicker Model | v1.1 | 0/? | Not started | - |
+| 4. Zwicker Model | v1.1 | 1/1 | Complete | 2026-01-09 |
 
 ---
 
