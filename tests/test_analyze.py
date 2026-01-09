@@ -234,3 +234,54 @@ class TestToDict:
         assert "temporal" in d
         assert "stereo" in d
         assert "loudness_lufs" in d
+        assert "psychoacoustic" in d
+
+
+class TestPsychoacoustic:
+    """Tests for psychoacoustic feature integration."""
+
+    def test_psychoacoustic_field_exists(self, test_tone_stereo):
+        """AnalysisResult includes psychoacoustic field."""
+        result = analyze(test_tone_stereo)
+
+        # Field should exist as dict (may be empty if MoSQITo not installed)
+        assert isinstance(result.psychoacoustic, dict)
+
+    def test_psychoacoustic_in_to_dict(self, test_tone_stereo):
+        """to_dict() includes psychoacoustic in output."""
+        result = analyze(test_tone_stereo)
+        d = result.to_dict()
+
+        assert "psychoacoustic" in d
+        assert isinstance(d["psychoacoustic"], dict)
+
+    def test_psychoacoustic_has_expected_keys_if_available(self, test_tone_stereo):
+        """If MoSQITo installed, psychoacoustic has expected keys."""
+        result = analyze(test_tone_stereo)
+
+        # Skip test if MoSQITo not installed
+        if not result.psychoacoustic:
+            pytest.skip("MoSQITo not installed - skipping key validation")
+
+        expected_keys = ["loudness_sone", "loudness_sone_max", "sharpness_acum", "roughness_asper"]
+        for key in expected_keys:
+            assert key in result.psychoacoustic, f"Missing key: {key}"
+            assert isinstance(result.psychoacoustic[key], float), f"{key} should be float"
+
+    def test_psychoacoustic_values_reasonable(self, test_tone_stereo):
+        """If MoSQITo installed, psychoacoustic values are in reasonable ranges."""
+        result = analyze(test_tone_stereo)
+
+        # Skip test if MoSQITo not installed
+        if not result.psychoacoustic:
+            pytest.skip("MoSQITo not installed - skipping value validation")
+
+        # Loudness in sones should be positive
+        assert result.psychoacoustic["loudness_sone"] >= 0
+        assert result.psychoacoustic["loudness_sone_max"] >= result.psychoacoustic["loudness_sone"]
+
+        # Sharpness in acum should be positive
+        assert result.psychoacoustic["sharpness_acum"] >= 0
+
+        # Roughness in asper should be non-negative
+        assert result.psychoacoustic["roughness_asper"] >= 0

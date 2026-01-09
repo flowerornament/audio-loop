@@ -12,6 +12,8 @@ import numpy as np
 import pyloudnorm as pyln
 import soundfile as sf
 
+from audioloop.psychoacoustic import compute_psychoacoustic
+
 
 class AnalysisError(Exception):
     """Raised when audio analysis fails."""
@@ -58,6 +60,7 @@ class AnalysisResult:
     temporal: dict = field(default_factory=dict)
     stereo: dict = field(default_factory=dict)
     loudness_lufs: float = 0.0
+    psychoacoustic: dict = field(default_factory=dict)  # Empty if MoSQITo unavailable
 
     def to_dict(self) -> dict:
         """Convert to dictionary for JSON serialization."""
@@ -70,6 +73,7 @@ class AnalysisResult:
             "temporal": self.temporal,
             "stereo": self.stereo,
             "loudness_lufs": self.loudness_lufs,
+            "psychoacoustic": self.psychoacoustic,
         }
 
 
@@ -281,6 +285,10 @@ def analyze(path: Path) -> AnalysisResult:
     else:
         loudness_lufs = _compute_loudness_lufs(y, sr)
 
+    # Compute psychoacoustic metrics (if MoSQITo available)
+    # Use original signal for best quality preprocessing
+    psychoacoustic = compute_psychoacoustic(y, sr) or {}
+
     return AnalysisResult(
         file=str(path),
         duration_sec=duration,
@@ -290,4 +298,5 @@ def analyze(path: Path) -> AnalysisResult:
         temporal=temporal,
         stereo=stereo,
         loudness_lufs=loudness_lufs,
+        psychoacoustic=psychoacoustic,
     )

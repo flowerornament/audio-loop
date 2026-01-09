@@ -86,7 +86,8 @@ def compute_psychoacoustic(y: np.ndarray, sr: int) -> dict | None:
         N, N_spec, bark_axis, time_axis = loudness_zwtv(y_48k, fs=fs, field_type="free")
 
         # Compute sharpness from loudness (DIN 45692)
-        S = sharpness_din_from_loudness(N, N_spec, is_stationary=False)
+        # weighting="din" for DIN 45692 standard
+        S = sharpness_din_from_loudness(N, N_spec, weighting="din")
 
         # Compute roughness (Daniel & Weber model)
         R, time_axis_r, _, _ = roughness_dw(y_48k, fs=fs)
