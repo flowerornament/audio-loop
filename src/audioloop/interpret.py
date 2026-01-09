@@ -103,6 +103,75 @@ def interpret_loudness(lufs: float) -> str:
     return f"{lufs:.1f} LUFS ({desc})"
 
 
+def interpret_zwicker_loudness(sones: float) -> str:
+    """Add reference context to Zwicker loudness value.
+
+    Note: Sones are relative (uncalibrated). Values indicate
+    perceived loudness relative to reference, not absolute SPL.
+
+    Args:
+        sones: Zwicker loudness in sones.
+
+    Returns:
+        Formatted string with value and perceptual context.
+    """
+    if sones < 5:
+        desc = "quiet"
+    elif sones < 20:
+        desc = "moderate"
+    elif sones < 50:
+        desc = "loud"
+    else:
+        desc = "very loud"
+    return f"{sones:.1f} sone ({desc})"
+
+
+def interpret_sharpness(acum: float) -> str:
+    """Add reference context to sharpness value.
+
+    Acum scale: 1.0 = reference narrow-band noise at 1kHz.
+    Higher = more high-frequency energy perceived.
+
+    Args:
+        acum: Sharpness in acum.
+
+    Returns:
+        Formatted string with value and perceptual context.
+    """
+    if acum < 1.0:
+        desc = "dull/warm"
+    elif acum < 2.0:
+        desc = "neutral"
+    elif acum < 3.0:
+        desc = "bright"
+    else:
+        desc = "harsh/piercing"
+    return f"{acum:.2f} acum ({desc})"
+
+
+def interpret_roughness(asper: float) -> str:
+    """Add reference context to roughness value.
+
+    Asper scale: Perception of rapid amplitude modulation (20-300 Hz).
+    0 = smooth, higher = more textured/gritty.
+
+    Args:
+        asper: Roughness in asper.
+
+    Returns:
+        Formatted string with value and perceptual context.
+    """
+    if asper < 0.1:
+        desc = "smooth"
+    elif asper < 0.5:
+        desc = "slight texture"
+    elif asper < 1.0:
+        desc = "noticeable modulation"
+    else:
+        desc = "rough/gritty"
+    return f"{asper:.3f} asper ({desc})"
+
+
 def format_analysis_human(result: AnalysisResult) -> str:
     """Format analysis result as human-readable output.
 
@@ -198,5 +267,30 @@ def format_analysis_human(result: AnalysisResult) -> str:
     loudness_table.add_row("Integrated", interpret_loudness(result.loudness_lufs))
 
     console.print(loudness_table)
+
+    # PSYCHOACOUSTIC section (if data available)
+    if result.psychoacoustic:
+        console.print()
+        psych_table = Table(title="PSYCHOACOUSTIC", show_header=False, box=None)
+        psych_table.add_column("Feature", style="dim")
+        psych_table.add_column("Value")
+
+        if "loudness_sone" in result.psychoacoustic:
+            psych_table.add_row(
+                "Zwicker Loudness",
+                interpret_zwicker_loudness(result.psychoacoustic["loudness_sone"]),
+            )
+        if "sharpness_acum" in result.psychoacoustic:
+            psych_table.add_row(
+                "Sharpness",
+                interpret_sharpness(result.psychoacoustic["sharpness_acum"]),
+            )
+        if "roughness_asper" in result.psychoacoustic:
+            psych_table.add_row(
+                "Roughness",
+                interpret_roughness(result.psychoacoustic["roughness_asper"]),
+            )
+
+        console.print(psych_table)
 
     return string_io.getvalue()
