@@ -33,6 +33,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+psychoacoustic = [
+    "mosqito>=1.2.0",
+]
 dev = [
     "pytest>=7.0.0",
     "pytest-cov",
