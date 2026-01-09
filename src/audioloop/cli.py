@@ -9,7 +9,9 @@ import typer
 from rich.console import Console
 
 from audioloop import __version__
+from audioloop.analyze import analyze as do_analyze, AnalysisError
 from audioloop.errors import format_error_human
+from audioloop.interpret import format_analysis_human
 from audioloop.render import render as do_render
 
 app = typer.Typer(
@@ -164,3 +166,51 @@ def render(
             raise typer.Exit(1)  # SC error
         else:
             raise typer.Exit(2)  # System error
+
+
+@app.command()
+def analyze(
+    file: Path = typer.Argument(
+        ...,
+        help="WAV file to analyze",
+        exists=False,  # We handle existence check ourselves for better error messages
+    ),
+    json_output: bool = typer.Option(
+        False,
+        "--json",
+        "-j",
+        help="Output as JSON",
+    ),
+) -> None:
+    """Analyze an audio file and extract acoustic features.
+
+    Extracts spectral, temporal, stereo, and loudness features from a WAV file.
+    Outputs human-readable summary by default, or JSON with --json flag.
+
+    Examples:
+
+        audioloop analyze recording.wav
+
+        audioloop analyze recording.wav --json
+    """
+    # Validate file exists
+    if not file.exists():
+        error_console.print(f"[red]Error:[/red] File not found: {file}")
+        raise typer.Exit(2)  # System error
+
+    if not file.is_file():
+        error_console.print(f"[red]Error:[/red] Not a file: {file}")
+        raise typer.Exit(2)  # System error
+
+    # Run analysis
+    try:
+        result = do_analyze(file)
+    except AnalysisError as e:
+        error_console.print(f"[red]Analysis failed:[/red] {e}")
+        raise typer.Exit(1)  # Analysis error
+
+    # Output results
+    if json_output:
+        print(json.dumps(result.to_dict(), indent=2))
+    else:
+        console.print(format_analysis_human(result))

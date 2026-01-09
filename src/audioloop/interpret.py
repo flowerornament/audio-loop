@@ -4,6 +4,8 @@ Provides human-readable context for raw acoustic measurements.
 These are reference ranges, not judgments - interpretation depends on context.
 """
 
+from io import StringIO
+
 from rich.console import Console
 from rich.table import Table
 
@@ -113,7 +115,9 @@ def format_analysis_human(result: AnalysisResult) -> str:
     Returns:
         Rich-formatted string with all analysis sections.
     """
-    console = Console(record=True, force_terminal=True)
+    # Use StringIO to capture output without printing to stdout
+    string_io = StringIO()
+    console = Console(file=string_io, force_terminal=True)
 
     # FILE INFO section
     info_table = Table(title="FILE INFO", show_header=False, box=None)
@@ -195,4 +199,4 @@ def format_analysis_human(result: AnalysisResult) -> str:
 
     console.print(loudness_table)
 
-    return console.export_text()
+    return string_io.getvalue()
