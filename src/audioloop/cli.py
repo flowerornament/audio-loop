@@ -10,7 +10,7 @@ from rich.console import Console
 
 from audioloop import __version__
 from audioloop.analyze import analyze as do_analyze, AnalysisError
-from audioloop.compare import compare_audio, format_comparison_human
+from audioloop.compare import compare_audio, print_comparison_human
 from audioloop.errors import format_error_human
 from audioloop.interpret import format_analysis_human
 from audioloop.play import play_audio, PlaybackError
@@ -315,4 +315,4 @@ def compare(
     if json_output:
         print(json.dumps(result.to_dict(), indent=2))
     else:
-        console.print(format_comparison_human(result))
+        print_comparison_human(result, console)

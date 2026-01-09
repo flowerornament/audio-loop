@@ -260,18 +260,13 @@ def compare_audio(file_a: Path, file_b: Path) -> ComparisonResult:
     )
 
 
-def format_comparison_human(result: ComparisonResult) -> str:
-    """Format comparison result as human-readable output.
+def print_comparison_human(result: ComparisonResult, console: Console) -> None:
+    """Print comparison result as human-readable output.
 
     Args:
         result: ComparisonResult from compare_audio().
-
-    Returns:
-        Rich-formatted string with comparison.
+        console: Rich Console to print to.
     """
-    string_io = StringIO()
-    console = Console(file=string_io, force_terminal=True)
-
     # Header
     console.print(f"[bold]Comparison:[/bold] {result.file_a} -> {result.file_b}")
     console.print(
@@ -373,4 +368,17 @@ def format_comparison_human(result: ComparisonResult) -> str:
     if result.summary.get("interpretations"):
         console.print("[bold]Summary:[/bold]", ", ".join(result.summary["interpretations"]))
 
+
+def format_comparison_human(result: ComparisonResult) -> str:
+    """Format comparison result as human-readable output (for testing).
+
+    Args:
+        result: ComparisonResult from compare_audio().
+
+    Returns:
+        Plain text string with comparison (no ANSI codes).
+    """
+    string_io = StringIO()
+    console = Console(file=string_io, force_terminal=False, no_color=True)
+    print_comparison_human(result, console)
     return string_io.getvalue()
