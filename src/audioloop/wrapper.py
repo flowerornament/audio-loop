@@ -3,17 +3,19 @@
 from pathlib import Path
 
 # Template for wrapping a simple function in NRT boilerplate
+# Note: All var declarations must come before any expressions in SuperCollider
 NRT_WRAPPER_TEMPLATE = '''// Auto-generated NRT wrapper by audioloop
 (
 var userFunc = __USER_CODE__;
 var duration = __DURATION__;
 var outputPath = "__OUTPUT_PATH__";
+var score;
 
 SynthDef(\\audioloop_render, { |out=0|
     Out.ar(out, userFunc.value);
 }).store;
 
-var score = Score([
+score = Score([
     [0.0, [\\s_new, \\audioloop_render, 1000, 0, 0]],
     [duration, [\\n_free, 1000]],
 ]);
