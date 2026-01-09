@@ -120,14 +120,14 @@ Single entry point: `audioloop <command>`
 | Command | Purpose |
 |---------|---------|
 | `audioloop render <file.scd>` | Execute SC code, capture WAV, return errors |
+| `audioloop render <file.scd> --duration 4` | Render simple function syntax (auto-wrapped) |
 | `audioloop analyze <file.wav>` | Acoustic analysis |
-| `audioloop analyze <file.wav> --spectrogram out.png` | Include spectrogram image |
 | `audioloop play <file.wav>` | Open in system audio player |
 | `audioloop compare <a.wav> <b.wav>` | Side-by-side analysis (for A/B or reference comparison) |
 
-All commands output JSON for Claude to parse. Human-readable format with `--human`.
+All commands output JSON by default for Claude to parse. Human-readable format available.
 
-### Analysis Output
+### Analysis Output (v1)
 
 Objective measurements that Claude interprets:
 
@@ -135,22 +135,26 @@ Objective measurements that Claude interprets:
 {
   "file": "sound.wav",
   "duration_sec": 4.2,
-  "sample_rate": 48000,
+  "sample_rate": 44100,
+  "channels": 2,
   "spectral": {
-    "centroid_hz": 847,
-    "rolloff_hz": 2100,
-    "flatness": 0.12,
-    "bandwidth_hz": 1200
+    "left": {
+      "centroid_hz": 847,
+      "rolloff_hz": 2100,
+      "flatness": 0.12,
+      "bandwidth_hz": 1200
+    },
+    "right": {
+      "centroid_hz": 892,
+      "rolloff_hz": 2200,
+      "flatness": 0.11,
+      "bandwidth_hz": 1250
+    }
   },
   "temporal": {
     "attack_ms": 48,
     "rms": 0.23,
     "crest_factor": 4.2
-  },
-  "psychoacoustic": {
-    "roughness_asper": 0.23,
-    "sharpness_acum": 0.8,
-    "loudness_lufs": -14.2
   },
   "stereo": {
     "width": 0.72,
@@ -159,9 +163,11 @@ Objective measurements that Claude interprets:
 }
 ```
 
-### Spectrogram
+*Note: Psychoacoustic metrics (roughness, sharpness, loudness) are planned for a future milestone.*
 
-`--spectrogram out.png` generates an image Claude can read directly (multimodal). Claude can see harmonic structure, transients, frequency evolution - potentially more informative than numeric features alone.
+### Spectrogram (Post-v1)
+
+`--spectrogram out.png` will generate an image Claude can read directly (multimodal). Claude can see harmonic structure, transients, frequency evolution - potentially more informative than numeric features alone. This feature is planned for a future milestone.
 
 ### Error Handling
 
@@ -185,16 +191,57 @@ When SuperCollider code has errors, `render` captures stdout/stderr:
 - "ambient texture with slow evolution"
 - "make a techno track"
 
-v1 may not achieve full generality, but that's the direction. We start with what works and expand.
+We start with what works and expand.
+
+## v1 Scope
+
+**v1 = Working Feedback Loop** (Milestone 1 in the roadmap)
+
+v1 includes:
+- `audioloop render` - with both full NRT and simple function wrapping
+- `audioloop analyze` - spectral and temporal features (no psychoacoustics yet)
+- `audioloop play` - system audio playback
+- `audioloop compare` - side-by-side delta analysis
+
+v1 does NOT include:
+- Psychoacoustic metrics (roughness, sharpness, loudness) - Milestone 2
+- Spectrogram visualization - Milestone 3
+- Reference sound comparison - Milestone 3
 
 ## Architecture Note: SC Process Management
 
-The `audioloop render` command needs to:
-- Manage the SuperCollider/sclang process
-- Capture stdout for logging and error reporting
-- Get rendered audio into the Python toolchain for analysis
+The `audioloop render` command uses SuperCollider's NRT (Non-Real-Time) mode for offline rendering. This avoids the complexity of managing a running audio server.
 
-This likely means a server or process manager sitting between the CLI and sclang. Multiple architectural approaches are possible - detailed design TBD in implementation planning.
+### Two Render Modes
+
+**Full NRT Mode** - For complex sounds with custom timing:
+```supercollider
+// Full NRT code - user controls everything
+SynthDef(\pad, { |out=0| ... }).store;
+var score = Score([...]);
+score.recordNRT(
+    outputFilePath: "__OUTPUT_PATH__",  // <-- placeholder replaced by audioloop
+    ...
+    action: { 0.exit; }
+);
+```
+
+**Simple Function Mode** - For quick iteration:
+```supercollider
+// Just the sound - audioloop wraps it in NRT boilerplate
+{ LPF.ar(Saw.ar(200), 1000) * 0.3 ! 2 }
+```
+Render with: `audioloop render simple.scd --duration 4`
+
+### Output Path Convention
+
+Use the `__OUTPUT_PATH__` placeholder in your NRT code. `audioloop render` replaces it with the actual output path before execution. If the placeholder is missing in full NRT code, the render will likely fail (output goes to wrong location).
+
+### Mode Detection
+
+`audioloop render` checks for `recordNRT` in the file:
+- **Found** → Full NRT mode (run as-is with placeholder replacement)
+- **Not found** → Simple function mode (requires `--duration` flag)
 
 ## A/B Testing (Development Only)
 
@@ -223,10 +270,10 @@ This helps tune analysis parameters. It's not part of normal use - normal use is
 
 | Component | Technology | Why |
 |-----------|------------|-----|
-| Sound synthesis | SuperCollider via sclang | Expressive, text-based, scriptable |
-| Audio analysis | Python/librosa + MoSQITo | Feature extraction + psychoacoustics |
-| CLI | Python/typer | Simple, good for JSON output |
-| SC process management | TBD | Needs design work |
+| Sound synthesis | SuperCollider via sclang (NRT mode) | Expressive, text-based, scriptable, offline rendering |
+| Audio analysis (v1) | Python/librosa | Feature extraction (spectral, temporal, stereo) |
+| Audio analysis (post-v1) | + MoSQITo | Psychoacoustic metrics |
+| CLI | Python/typer + rich | Simple, good for JSON output, nice formatting |
 
 ## Assumptions to Validate
 
@@ -245,20 +292,23 @@ Not v1 scope, but worth considering if the core loop proves valuable.
 
 ## Requirements
 
-**Core Loop**
-- [ ] `audioloop render` - SC process management, WAV capture, error reporting
-- [ ] `audioloop analyze` - acoustic feature extraction
+### Validated (v1.0)
+- [x] `audioloop render` - NRT rendering with both full and wrapped modes
+- [x] `audioloop analyze` - spectral and temporal feature extraction
+- [x] `audioloop play` - system audio player
+- [x] `audioloop compare` - side-by-side delta analysis
+- [x] JSON output for all commands
+
+### Active (v1.1+)
 - [ ] `audioloop analyze --spectrogram` - spectrogram image generation
-- [ ] `audioloop play` - system audio player
-- [ ] `audioloop compare` - side-by-side analysis
-- [ ] JSON output for all commands
+- [ ] Psychoacoustic metrics (roughness, sharpness, loudness via MoSQITo)
 
-## Out of Scope (v1)
+## Out of Scope
 
-- GUI or web interface
-- Real-time synthesis
-- Pre-built sound presets
-- Cross-session vocabulary learning
+- GUI or web interface - CLI-first for Claude Code integration
+- Real-time synthesis - NRT mode simplifies architecture
+- Pre-built sound presets - Claude generates custom sounds
+- Cross-session vocabulary learning - would require explicit note-taking
 
 ## Constraints
 
@@ -278,5 +328,24 @@ You can describe sounds with varying complexity and Claude reliably produces som
 **Stretch:**
 Iteration usually converges in 1-3 attempts. Claude handles complex multi-element descriptions ("techno kick with sidechain pumping on a pad").
 
+## Current State (v1.0)
+
+- **Shipped:** 2026-01-09
+- **LOC:** 1,868 Python
+- **Tech stack:** Python/typer/rich, librosa, SuperCollider (NRT mode)
+- **Commands:** render, analyze, play, compare
+- **Tests:** 39+ pytest tests
+
+## Key Decisions
+
+| Decision | Rationale | Outcome |
+|----------|-----------|---------|
+| Two render modes (full NRT + wrapped) | Full NRT for complex sounds, wrapped for quick iteration | Good |
+| Mode detection via recordNRT presence | Simple, reliable detection | Good |
+| __OUTPUT_PATH__ placeholder convention | Clean separation of SC code and output path | Good |
+| Mean aggregation for spectral features | Single summary value simplifies Claude interpretation | Good |
+| Reference ranges, not judgments | Context-dependent interpretation left to user/Claude | Good |
+| >10% significance threshold | Filters noise, matches perceptual difference threshold | Good |
+
 ---
-*Last updated: 2026-01-09*
+*Last updated: 2026-01-09 after v1.0 milestone*
