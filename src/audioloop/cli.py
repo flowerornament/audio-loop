@@ -157,8 +157,10 @@ def render(
 
     # Exit with appropriate code
     if not result.success:
-        # Exit code 1 for SC errors, 2 for system errors
-        if result.error and result.error.file:
-            raise typer.Exit(1)  # SC error with file info
+        # Exit code 1 for SC errors (syntax, runtime), 2 for system errors
+        # SC errors have sclang output; system errors (file not found, missing
+        # --duration, SC not installed) occur before sclang runs
+        if result.sclang_output:
+            raise typer.Exit(1)  # SC error
         else:
             raise typer.Exit(2)  # System error
