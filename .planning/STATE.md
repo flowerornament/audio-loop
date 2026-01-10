@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-09)
 
 **Core value:** Give Claude detailed acoustic measurements to reason about sound
-**Current focus:** v1.1 SHIPPED - Ready for v2.0 planning
+**Current focus:** v2.0 Analysis Upgrades - faster analysis, spectrogram visualization
 
 ## Current Position
 
-**Milestone:** v1.1 Psychoacoustics SHIPPED
-**Phase:** Ready to plan v2.0
-**Status:** Between milestones
-**Last activity:** 2026-01-09 - v1.1 milestone archived
+**Milestone:** v2.0 Analysis Upgrades
+**Phase:** 5 of 7 (Performance Optimization)
+**Status:** Ready to plan
+**Last activity:** 2026-01-09 - Milestone v2.0 created
 
-Progress: v1.0 + v1.1 complete (4 phases, 7 plans total)
+Progress: ░░░░░░░░░░ 0%
 
 ## Phase Progress
 
@@ -30,8 +30,12 @@ Progress: v1.0 + v1.1 complete (4 phases, 7 plans total)
 |-------|------|--------|----------|
 | 4 | Zwicker Model Integration | **complete** | completed |
 
-### v2.0 Advanced Features
-*Scope TBD - see ROADMAP.md for candidates*
+### v2.0 Analysis Upgrades (In Progress)
+| Phase | Name | Status | Research |
+|-------|------|--------|----------|
+| 5 | Performance Optimization | Not started | Unlikely |
+| 6 | Spectrogram Visualization | Not started | Likely |
+| 7 | Real-World Validation | Not started | Unlikely |
 
 ## Accumulated Decisions
 
@@ -41,6 +45,7 @@ See: `.planning/PROJECT.md` for full decision log with outcomes.
 
 ## Recent Activity
 
+- 2026-01-09: **v2.0 CREATED** - Analysis Upgrades milestone (3 phases)
 - 2026-01-09: **v1.1 SHIPPED** - Psychoacoustic metrics complete
 - 2026-01-09: Milestone 2 archived to milestones/v1.1-ROADMAP.md
 - 2026-01-09: Completed 04-02-PLAN.md - CLI psychoacoustic support

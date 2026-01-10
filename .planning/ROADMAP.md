@@ -4,7 +4,7 @@
 
 - [v1.0 Working Feedback Loop](milestones/v1.0-ROADMAP.md) (Phases 1-3) SHIPPED 2026-01-09
 - [v1.1 Psychoacoustics](milestones/v1.1-ROADMAP.md) (Phase 4) SHIPPED 2026-01-09
-- v2.0 Advanced Features (TBD)
+- 🚧 **v2.0 Analysis Upgrades** - Phases 5-7 (in progress)
 
 ## Completed Milestones
 
@@ -34,14 +34,40 @@
 
 ---
 
-## v2.0 Advanced Features (TBD)
+## 🚧 v2.0 Analysis Upgrades (In Progress)
 
-Scope to be defined. Candidates:
+**Milestone Goal:** Make analysis faster and richer so the feedback loop tightens
 
-- **Spectrogram visualization:** `--spectrogram out.png` for Claude's multimodal analysis
-- **Descriptor discovery:** A/B workflow, experiment tracking, learned mappings
-- **Reference comparison:** "Make it sound like [reference.wav]"
-- **Temporal evolution:** Beat/tempo tracking, feature evolution over time
+#### Phase 5: Performance Optimization
+
+**Goal**: Profile psychoacoustic metrics, parallelize serial bottleneck, target sub-5s full analysis
+**Depends on**: v1.1 complete
+**Research**: Unlikely (internal profiling, standard Python multiprocessing)
+**Plans**: TBD
+
+Plans:
+- [ ] 05-01: TBD (run /gsd:plan-phase 5 to break down)
+
+#### Phase 6: Spectrogram Visualization
+
+**Goal**: PNG (stacked waveform/spectrogram/chroma) + ASCII energy bands + CLI integration
+**Depends on**: Phase 5
+**Research**: Likely (librosa.display APIs, matplotlib figure stacking)
+**Research topics**: librosa.display spectrogram functions, matplotlib multi-subplot layout, ASCII visualization patterns
+**Plans**: TBD
+
+Plans:
+- [ ] 06-01: TBD (run /gsd:plan-phase 6 to break down)
+
+#### Phase 7: Real-World Validation
+
+**Goal**: Sound design sessions to verify the loop tightened - iteration speed, feedback richness, outcome quality
+**Depends on**: Phase 6
+**Research**: Unlikely (user testing, not code implementation)
+**Plans**: TBD
+
+Plans:
+- [ ] 07-01: TBD (run /gsd:plan-phase 7 to break down)
 
 ---
 
@@ -53,7 +79,10 @@ Scope to be defined. Candidates:
 | 2. Analysis Core | v1.0 | 2/2 | Complete | 2026-01-09 |
 | 3. Iteration Tools | v1.0 | 2/2 | Complete | 2026-01-09 |
 | 4. Zwicker Model | v1.1 | 2/2 | Complete | 2026-01-09 |
+| 5. Performance Optimization | v2.0 | 0/? | Not started | - |
+| 6. Spectrogram Visualization | v2.0 | 0/? | Not started | - |
+| 7. Real-World Validation | v2.0 | 0/? | Not started | - |
 
 ---
 
-*Last updated: 2026-01-09 after v1.1 milestone*
+*Last updated: 2026-01-09 after v2.0 milestone creation*

@@ -779,15 +779,15 @@ results = b.psychoacoustic_analysis(settings)
 
 1. ~~**MoSQITo fluctuation strength**: Verify if implemented.~~ **RESOLVED: NOT implemented. Skip for v1.**
 
-2. **Sample rate strategy**: Standardize on 48kHz throughout (for MoSQITo compat) or use native rate and resample only for psychoacoustic?
+2. ~~**Sample rate strategy**: Standardize on 48kHz throughout (for MoSQITo compat) or use native rate and resample only for psychoacoustic?~~ **RESOLVED: Use native sample rate for v1. Resample only when MoSQITo is added in Milestone 2.**
 
-3. **Stereo handling**: Analyze both channels separately, or convert to mid/side, or force mono?
+3. ~~**Stereo handling**: Analyze both channels separately, or convert to mid/side, or force mono?~~ **RESOLVED: Analyze both L/R channels separately, compute per-channel features, report deltas between channels. Also compute stereo width and correlation.**
 
-4. **Spectrogram resolution**: How many mel bands? How wide should ASCII output be?
+4. **Spectrogram resolution**: How many mel bands? How wide should ASCII output be? *(Deferred - spectrogram is post-v1)*
 
-5. **Interpretation thresholds**: What centroid values map to "warm" vs "bright"? Need calibration or use literature values?
+5. ~~**Interpretation thresholds**: What centroid values map to "warm" vs "bright"? Need calibration or use literature values?~~ **RESOLVED: No hardcoded thresholds. Provide reference ranges in output (e.g., "typical pads: 500-1500Hz"). Let Claude learn through iteration.**
 
-6. **Fluctuation strength alternative**: Implement basic modulation index, or skip entirely for v1?
+6. ~~**Fluctuation strength alternative**: Implement basic modulation index, or skip entirely for v1?~~ **RESOLVED: Skip for v1. Temporal evolution features (beat tracking, modulation detection) are also deferred.**
 
 ---
 
@@ -826,3 +826,4 @@ results = b.psychoacoustic_analysis(settings)
 *Research completed: 2026-01-08*
 *Updated: 2026-01-09 - Confirmed fluctuation strength not in MoSQITo, added Soundscapy, updated library versions*
 *Updated: 2026-01-09 - Added temporal evolution analysis section (beat/tempo, pitch tracking, feature evolution, segmentation)*
+*Updated: 2026-01-09 - Resolved open questions (sample rate, stereo handling, thresholds, evolution features)*
