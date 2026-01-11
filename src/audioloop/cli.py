@@ -16,6 +16,7 @@ from audioloop.errors import format_error_human
 from audioloop.interpret import format_analysis_human, print_analysis_human
 from audioloop.play import play_audio, PlaybackError
 from audioloop.render import render as do_render
+from audioloop.spectrogram import generate_spectrogram
 
 app = typer.Typer(
     name="audioloop",
@@ -189,6 +190,12 @@ def analyze(
         "--no-psychoacoustic",
         help="Skip psychoacoustic metrics (faster analysis)",
     ),
+    spectrogram: Optional[Path] = typer.Option(
+        None,
+        "--spectrogram",
+        "-s",
+        help="Save spectrogram PNG to path",
+    ),
 ) -> None:
     """Analyze an audio file and extract acoustic features.
 
@@ -217,11 +224,21 @@ def analyze(
         error_console.print(f"[red]Analysis failed:[/red] {e}")
         raise typer.Exit(1)  # Analysis error
 
+    # Generate spectrogram if requested
+    spectrogram_path = None
+    if spectrogram:
+        spectrogram_path = generate_spectrogram(file, spectrogram)
+
     # Output results
     if json_output:
-        print(json.dumps(result.to_dict(), indent=2))
+        output_data = result.to_dict()
+        if spectrogram_path:
+            output_data["spectrogram_path"] = str(spectrogram_path)
+        print(json.dumps(output_data, indent=2))
     else:
         console.print(format_analysis_human(result))
+        if spectrogram_path:
+            console.print(f"Spectrogram: {spectrogram_path}")
 
 
 @app.command()
@@ -380,6 +397,12 @@ def iterate(
         "-h",
         help="Use human-readable output instead of JSON",
     ),
+    spectrogram: Optional[Path] = typer.Option(
+        None,
+        "--spectrogram",
+        "-s",
+        help="Save spectrogram PNG to path",
+    ),
 ) -> None:
     """Render, analyze, and optionally play SuperCollider code in one command.
 
@@ -530,7 +553,12 @@ def iterate(
                 error_console.print(f"[red]Analysis failed:[/red] {e}")
             raise typer.Exit(1)
 
-        # Step 3: Play (if not skipped)
+        # Step 3: Generate spectrogram (if requested)
+        spectrogram_path = None
+        if spectrogram:
+            spectrogram_path = generate_spectrogram(output_path, spectrogram)
+
+        # Step 4: Play (if not skipped)
         played = False
         play_error = None
         if not no_play:
@@ -556,11 +584,15 @@ def iterate(
         }
         if play_error:
             output_data["play_error"] = play_error
+        if spectrogram_path:
+            output_data["spectrogram_path"] = str(spectrogram_path)
 
         if use_json:
             print(json.dumps(output_data, indent=2))
         else:
             console.print(f"[green]✓ Rendered:[/green] {output_path} ({render_result.duration_sec:.2f}s)")
+            if spectrogram_path:
+                console.print(f"[green]✓ Spectrogram:[/green] {spectrogram_path}")
             if played:
                 console.print("[green]✓ Played[/green]")
             elif play_error:
