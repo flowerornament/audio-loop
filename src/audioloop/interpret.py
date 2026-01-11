@@ -182,11 +182,12 @@ def format_analysis_human(result: AnalysisResult) -> str:
         result: AnalysisResult from analyze().
 
     Returns:
-        Rich-formatted string with all analysis sections.
+        Formatted string with all analysis sections (plain text, no ANSI codes).
     """
     # Use StringIO to capture output without printing to stdout
+    # Don't force_terminal - this produces clean text without ANSI escape codes
     string_io = StringIO()
-    console = Console(file=string_io, force_terminal=True)
+    console = Console(file=string_io, force_terminal=False)
 
     # FILE INFO section
     info_table = Table(title="FILE INFO", show_header=False, box=None)

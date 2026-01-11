@@ -564,7 +564,8 @@ def iterate(
             elif play_error:
                 error_console.print(f"[yellow]⚠ Playback failed:[/yellow] {play_error}")
             console.print()
-            console.print(format_analysis_human(analysis_result))
+            # format_analysis_human returns pre-formatted plain text string
+            print(format_analysis_human(analysis_result))
 
     finally:
         # Cleanup temp files
