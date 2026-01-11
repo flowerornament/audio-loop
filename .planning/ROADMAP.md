@@ -48,10 +48,22 @@
 Plans:
 - [x] 05-01: Performance profiling and benchmarking (completed 2026-01-11)
 
+#### Phase 5.1: CLI Iterate Command (INSERTED)
+
+**Goal**: Single `audioloop iterate` command for render→analyze→play loop with inline SC code support
+**Depends on**: Phase 5 (learnings from performance testing)
+**Research**: Unlikely (CLI design, existing codebase patterns)
+**Plans**: TBD
+
+**Context**: Real-world testing revealed orchestration overhead (multiple tool calls, process startups) is the actual bottleneck, not analysis code. This phase addresses that.
+
+Plans:
+- [ ] 5.1-01: TBD (run /gsd:plan-phase 5.1 to break down)
+
 #### Phase 6: Spectrogram Visualization
 
 **Goal**: PNG (stacked waveform/spectrogram/chroma) + ASCII energy bands + CLI integration
-**Depends on**: Phase 5
+**Depends on**: Phase 5.1
 **Research**: Likely (librosa.display APIs, matplotlib figure stacking)
 **Research topics**: librosa.display spectrogram functions, matplotlib multi-subplot layout, ASCII visualization patterns
 **Plans**: TBD
@@ -80,9 +92,10 @@ Plans:
 | 3. Iteration Tools | v1.0 | 2/2 | Complete | 2026-01-09 |
 | 4. Zwicker Model | v1.1 | 2/2 | Complete | 2026-01-09 |
 | 5. Performance Optimization | v2.0 | 1/1 | Complete | 2026-01-11 |
+| 5.1 CLI Iterate Command | v2.0 | 0/? | Not started | - |
 | 6. Spectrogram Visualization | v2.0 | 0/? | Not started | - |
 | 7. Real-World Validation | v2.0 | 0/? | Not started | - |
 
 ---
 
-*Last updated: 2026-01-11 after Phase 5 completion*
+*Last updated: 2026-01-11 after Phase 5.1 insertion*
