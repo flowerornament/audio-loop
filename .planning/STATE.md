@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-09)
 ## Current Position
 
 **Milestone:** v2.0 Analysis Upgrades
-**Phase:** 5.1 of 7 (CLI Iterate Command) - INSERTED
-**Status:** Ready to plan
-**Last activity:** 2026-01-11 - Inserted Phase 5.1 after real-world testing
+**Phase:** 5.1 of 7 (CLI Iterate Command) - COMPLETE
+**Status:** Phase complete, ready for next
+**Last activity:** 2026-01-11 - Completed 5.1-01-PLAN.md (iterate command)
 
-Progress: ██░░░░░░░░ 25% (1/4 v2.0 phases)
+Progress: ████░░░░░░ 40% (2/5 v2.0 phases)
 
 ## Phase Progress
 
@@ -34,7 +34,7 @@ Progress: ██░░░░░░░░ 25% (1/4 v2.0 phases)
 | Phase | Name | Status | Research |
 |-------|------|--------|----------|
 | 5 | Performance Optimization | **complete** | completed |
-| 5.1 | CLI Iterate Command | Not started | Unlikely |
+| 5.1 | CLI Iterate Command | **complete** | n/a |
 | 6 | Spectrogram Visualization | Not started | Likely |
 | 7 | Real-World Validation | Not started | Unlikely |
 
@@ -46,6 +46,7 @@ See: `.planning/PROJECT.md` for full decision log with outcomes.
 
 ## Recent Activity
 
+- 2026-01-11: **Phase 5.1 COMPLETE** - iterate command with inline SC code support
 - 2026-01-11: **Phase 5.1 INSERTED** - CLI iterate command (urgent, from real-world testing)
 - 2026-01-11: **Phase 5 COMPLETE** - Performance profiling, benchmarks established
 - 2026-01-09: **v2.0 CREATED** - Analysis Upgrades milestone (3 phases)
