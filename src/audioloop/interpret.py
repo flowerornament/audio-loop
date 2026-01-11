@@ -172,22 +172,42 @@ def interpret_roughness(asper: float) -> str:
     return f"{asper:.3f} asper ({desc})"
 
 
-def format_analysis_human(result: AnalysisResult) -> str:
-    """Format analysis result as human-readable output.
+def print_analysis_human(result: AnalysisResult, console: Console) -> None:
+    """Print analysis result as human-readable output directly to console.
 
-    Uses rich Tables for aligned output. Keeps it concise for both
-    human and Claude consumption.
+    Uses rich Tables for aligned output with proper terminal formatting.
+
+    Args:
+        result: AnalysisResult from analyze().
+        console: Rich Console to print to.
+    """
+    _render_analysis_tables(result, console)
+
+
+def format_analysis_human(result: AnalysisResult) -> str:
+    """Format analysis result as human-readable output string.
+
+    Uses rich Tables for aligned output. Returns plain text without ANSI codes.
 
     Args:
         result: AnalysisResult from analyze().
 
     Returns:
-        Formatted string with all analysis sections (plain text, no ANSI codes).
+        Formatted string with all analysis sections.
     """
-    # Use StringIO to capture output without printing to stdout
-    # Don't force_terminal - this produces clean text without ANSI escape codes
     string_io = StringIO()
     console = Console(file=string_io, force_terminal=False)
+    _render_analysis_tables(result, console)
+    return string_io.getvalue()
+
+
+def _render_analysis_tables(result: AnalysisResult, console: Console) -> None:
+    """Render analysis tables to the given console.
+
+    Args:
+        result: AnalysisResult from analyze().
+        console: Rich Console to render to.
+    """
 
     # FILE INFO section
     info_table = Table(title="FILE INFO", show_header=False, box=None)
@@ -293,5 +313,3 @@ def format_analysis_human(result: AnalysisResult) -> str:
             )
 
         console.print(psych_table)
-
-    return string_io.getvalue()

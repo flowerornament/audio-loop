@@ -13,7 +13,7 @@ from audioloop import __version__
 from audioloop.analyze import analyze as do_analyze, AnalysisError
 from audioloop.compare import compare_audio, print_comparison_human
 from audioloop.errors import format_error_human
-from audioloop.interpret import format_analysis_human
+from audioloop.interpret import format_analysis_human, print_analysis_human
 from audioloop.play import play_audio, PlaybackError
 from audioloop.render import render as do_render
 
@@ -535,8 +535,10 @@ def iterate(
         play_error = None
         if not no_play:
             try:
-                # Always warn before playing (to stderr so it doesn't affect JSON)
-                error_console.print("[yellow]🔊 Playing audio...[/yellow]")
+                # Warn before playing (to stderr so it doesn't affect JSON)
+                # Give user a moment to prepare for audio
+                error_console.print("[yellow]🔊 Audio playing in 1 second...[/yellow]")
+                time.sleep(1.0)
                 play_audio(output_path)
                 played = True
             except PlaybackError as e:
@@ -564,8 +566,8 @@ def iterate(
             elif play_error:
                 error_console.print(f"[yellow]⚠ Playback failed:[/yellow] {play_error}")
             console.print()
-            # format_analysis_human returns pre-formatted plain text string
-            print(format_analysis_human(analysis_result))
+            # Print analysis with proper terminal formatting
+            print_analysis_human(analysis_result, console)
 
     finally:
         # Cleanup temp files
