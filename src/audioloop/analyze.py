@@ -61,6 +61,7 @@ class AnalysisResult:
     stereo: dict = field(default_factory=dict)
     loudness_lufs: float = 0.0
     psychoacoustic: dict = field(default_factory=dict)  # Empty if MoSQITo unavailable
+    band_energies: dict = field(default_factory=dict)  # Frequency band energy distribution
 
     def to_dict(self) -> dict:
         """Convert to dictionary for JSON serialization."""
@@ -74,6 +75,7 @@ class AnalysisResult:
             "stereo": self.stereo,
             "loudness_lufs": self.loudness_lufs,
             "psychoacoustic": self.psychoacoustic,
+            "band_energies": self.band_energies,
         }
 
 
@@ -202,6 +204,56 @@ def _compute_loudness_lufs(y: np.ndarray, sr: int) -> float:
     return float(loudness)
 
 
+def _compute_band_energies(y: np.ndarray, sr: int) -> dict:
+    """Compute energy distribution across frequency bands.
+
+    Divides the spectrum into 6 perceptually-relevant bands and
+    computes relative energy in each.
+
+    Args:
+        y: Audio signal (mono, 1D array).
+        sr: Sample rate.
+
+    Returns:
+        Dict mapping band names to normalized energy values (0-1).
+        The maximum band energy is normalized to 1.0.
+    """
+    # Compute STFT
+    D = np.abs(librosa.stft(y))
+
+    # Get frequency bins
+    freqs = librosa.fft_frequencies(sr=sr, n_fft=2048)
+
+    # Define frequency bands (Hz)
+    bands = {
+        "sub": (20, 60),
+        "bass": (60, 250),
+        "low_mid": (250, 500),
+        "mid": (500, 2000),
+        "high_mid": (2000, 4000),
+        "high": (4000, 20000),
+    }
+
+    energies = {}
+    for name, (low, high) in bands.items():
+        # Find bins in this frequency range
+        mask = (freqs >= low) & (freqs < high)
+        if np.any(mask):
+            # Sum energy in this band (squared magnitude)
+            band_energy = np.sum(D[mask, :] ** 2)
+            energies[name] = float(band_energy)
+        else:
+            energies[name] = 0.0
+
+    # Normalize to max = 1.0
+    max_energy = max(energies.values()) if energies else 1.0
+    if max_energy > 0:
+        for name in energies:
+            energies[name] /= max_energy
+
+    return energies
+
+
 def analyze(path: Path, skip_psychoacoustic: bool = False) -> AnalysisResult:
     """Analyze an audio file and extract features.
 
@@ -292,6 +344,9 @@ def analyze(path: Path, skip_psychoacoustic: bool = False) -> AnalysisResult:
     else:
         psychoacoustic = compute_psychoacoustic(y, sr) or {}
 
+    # Compute frequency band energies (on combined mono signal)
+    band_energies = _compute_band_energies(combined, sr)
+
     return AnalysisResult(
         file=str(path),
         duration_sec=duration,
@@ -302,4 +357,5 @@ def analyze(path: Path, skip_psychoacoustic: bool = False) -> AnalysisResult:
         stereo=stereo,
         loudness_lufs=loudness_lufs,
         psychoacoustic=psychoacoustic,
+        band_energies=band_energies,
     )

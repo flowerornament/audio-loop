@@ -172,6 +172,21 @@ def interpret_roughness(asper: float) -> str:
     return f"{num(f'{asper:.3f}')} asper ({desc})"
 
 
+def format_band_bar(energy: float, width: int = 10) -> str:
+    """Format an ASCII bar representing energy level.
+
+    Args:
+        energy: Normalized energy value (0-1).
+        width: Total width of the bar in characters.
+
+    Returns:
+        ASCII bar string like "███░░░░░░░"
+    """
+    filled = int(round(energy * width))
+    empty = width - filled
+    return "█" * filled + "░" * empty
+
+
 def print_analysis_human(result: AnalysisResult, console: Console) -> None:
     """Print analysis result as human-readable output directly to console.
 
@@ -255,3 +270,23 @@ def _render_analysis_tables(result: AnalysisResult, console: Console) -> None:
             row(console, "Sharpness", interpret_sharpness(result.psychoacoustic["sharpness_acum"]))
         if "roughness_asper" in result.psychoacoustic:
             row(console, "Roughness", interpret_roughness(result.psychoacoustic["roughness_asper"]))
+
+    # FREQUENCY BANDS section (if data available)
+    if result.band_energies:
+        console.print()
+        section(console, "FREQUENCY BANDS")
+        # Display bands in order with labels
+        band_labels = {
+            "sub": "Sub (20-60)",
+            "bass": "Bass (60-250)",
+            "low_mid": "Low-mid",
+            "mid": "Mid (500-2k)",
+            "high_mid": "High-mid",
+            "high": "High (4k-20k)",
+        }
+        for band_key in ["sub", "bass", "low_mid", "mid", "high_mid", "high"]:
+            if band_key in result.band_energies:
+                energy = result.band_energies[band_key]
+                bar = format_band_bar(energy)
+                label = band_labels.get(band_key, band_key)
+                row(console, label, f"{bar}  {num(f'{energy:.2f}')}")
