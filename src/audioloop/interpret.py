@@ -9,7 +9,7 @@ from io import StringIO
 from rich.console import Console
 
 from audioloop.analyze import AnalysisResult
-from audioloop.layout import section, row, row3
+from audioloop.layout import section, row, row3, num
 
 
 def interpret_centroid(hz: float) -> str:
@@ -32,7 +32,7 @@ def interpret_centroid(hz: float) -> str:
     else:
         desc = "very bright"
 
-    return f"[yellow]{hz:.0f}[/yellow] Hz ({desc})"
+    return f"{num(f'{hz:.0f}')} Hz ({desc})"
 
 
 def interpret_crest_factor(cf: float) -> str:
@@ -53,7 +53,7 @@ def interpret_crest_factor(cf: float) -> str:
     else:
         desc = "very dynamic"
 
-    return f"[yellow]{cf:.1f}[/yellow] ({desc})"
+    return f"{num(f'{cf:.1f}')} ({desc})"
 
 
 def interpret_stereo_width(width: float) -> str:
@@ -76,7 +76,7 @@ def interpret_stereo_width(width: float) -> str:
     else:
         desc = "very wide"
 
-    return f"[yellow]{width:.2f}[/yellow] ({desc})"
+    return f"{num(f'{width:.2f}')} ({desc})"
 
 
 def interpret_loudness(lufs: float) -> str:
@@ -100,7 +100,7 @@ def interpret_loudness(lufs: float) -> str:
     else:
         desc = "very quiet"
 
-    return f"[yellow]{lufs:.1f}[/yellow] LUFS ({desc})"
+    return f"{num(f'{lufs:.1f}')} LUFS ({desc})"
 
 
 def interpret_zwicker_loudness(sones: float) -> str:
@@ -123,7 +123,7 @@ def interpret_zwicker_loudness(sones: float) -> str:
         desc = "loud"
     else:
         desc = "very loud"
-    return f"[yellow]{sones:.1f}[/yellow] sone ({desc})"
+    return f"{num(f'{sones:.1f}')} sone ({desc})"
 
 
 def interpret_sharpness(acum: float) -> str:
@@ -146,7 +146,7 @@ def interpret_sharpness(acum: float) -> str:
         desc = "bright"
     else:
         desc = "harsh/piercing"
-    return f"[yellow]{acum:.2f}[/yellow] acum ({desc})"
+    return f"{num(f'{acum:.2f}')} acum ({desc})"
 
 
 def interpret_roughness(asper: float) -> str:
@@ -169,7 +169,7 @@ def interpret_roughness(asper: float) -> str:
         desc = "noticeable modulation"
     else:
         desc = "rough/gritty"
-    return f"[yellow]{asper:.3f}[/yellow] asper ({desc})"
+    return f"{num(f'{asper:.3f}')} asper ({desc})"
 
 
 def print_analysis_human(result: AnalysisResult, console: Console) -> None:
@@ -211,9 +211,9 @@ def _render_analysis_tables(result: AnalysisResult, console: Console) -> None:
     # FILE INFO section
     section(console, "FILE INFO")
     row(console, "File", result.file)
-    row(console, "Duration", f"[yellow]{result.duration_sec:.2f}[/yellow]s")
-    row(console, "Sample Rate", f"[yellow]{result.sample_rate}[/yellow] Hz")
-    row(console, "Channels", f"[yellow]{result.channels}[/yellow]")
+    row(console, "Duration", f"{num(f'{result.duration_sec:.2f}')}s")
+    row(console, "Sample Rate", f"{num(str(result.sample_rate))} Hz")
+    row(console, "Channels", num(str(result.channels)))
     console.print()
 
     # SPECTRAL section - L/R columns
@@ -223,22 +223,22 @@ def _render_analysis_tables(result: AnalysisResult, console: Console) -> None:
 
     row3(console, "", "Left", "Right")
     row3(console, "Centroid", interpret_centroid(left["centroid_hz"]), interpret_centroid(right["centroid_hz"]))
-    row3(console, "Rolloff (85%)", f"[yellow]{left['rolloff_hz']:.0f}[/yellow] Hz", f"[yellow]{right['rolloff_hz']:.0f}[/yellow] Hz")
-    row3(console, "Flatness", f"[yellow]{left['flatness']:.3f}[/yellow]", f"[yellow]{right['flatness']:.3f}[/yellow]")
-    row3(console, "Bandwidth", f"[yellow]{left['bandwidth_hz']:.0f}[/yellow] Hz", f"[yellow]{right['bandwidth_hz']:.0f}[/yellow] Hz")
+    row3(console, "Rolloff (85%)", f"{num(f'{left['rolloff_hz']:.0f}')} Hz", f"{num(f'{right['rolloff_hz']:.0f}')} Hz")
+    row3(console, "Flatness", num(f"{left['flatness']:.3f}"), num(f"{right['flatness']:.3f}"))
+    row3(console, "Bandwidth", f"{num(f'{left['bandwidth_hz']:.0f}')} Hz", f"{num(f'{right['bandwidth_hz']:.0f}')} Hz")
     console.print()
 
     # DYNAMICS section
     section(console, "DYNAMICS")
-    row(console, "RMS", f"[yellow]{result.temporal['rms']:.4f}[/yellow]")
+    row(console, "RMS", num(f"{result.temporal['rms']:.4f}"))
     row(console, "Crest Factor", interpret_crest_factor(result.temporal["crest_factor"]))
-    row(console, "Attack", f"[yellow]{result.temporal['attack_ms']:.1f}[/yellow] ms")
+    row(console, "Attack", f"{num(f'{result.temporal['attack_ms']:.1f}')} ms")
     console.print()
 
     # STEREO section
     section(console, "STEREO")
     row(console, "Width", interpret_stereo_width(result.stereo["width"]))
-    row(console, "Correlation", f"[yellow]{result.stereo['correlation']:.2f}[/yellow]")
+    row(console, "Correlation", num(f"{result.stereo['correlation']:.2f}"))
     console.print()
 
     # LOUDNESS section

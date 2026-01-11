@@ -11,6 +11,27 @@ LABEL_WIDTH = 14
 VALUE_WIDTH = 20  # For L/R columns in spectral
 
 
+# Style functions - change colors here, applies everywhere
+def num(value: str) -> str:
+    """Style a numeric value."""
+    return f"[yellow]{value}[/yellow]"
+
+
+def up() -> str:
+    """Direction indicator: increased."""
+    return "[green]↑[/green]"
+
+
+def down() -> str:
+    """Direction indicator: decreased."""
+    return "[red]↓[/red]"
+
+
+def same() -> str:
+    """Direction indicator: unchanged."""
+    return "[dim]=[/dim]"
+
+
 def section(console: Console, title: str) -> None:
     """Print a section header with ─── TITLE ──────── format.
 

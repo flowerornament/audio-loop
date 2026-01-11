@@ -12,7 +12,7 @@ from typing import Literal
 from rich.console import Console
 
 from audioloop.analyze import analyze, AnalysisError
-from audioloop.layout import INDENT, section
+from audioloop.layout import INDENT, section, up, down, same
 
 
 # Direction and significance interpretations for common metrics
@@ -367,11 +367,11 @@ def print_comparison_human(result: ComparisonResult, console: Console) -> None:
 
             # Direction arrow
             if delta.direction == "up":
-                arrow = "[green]↑[/green]"
+                arrow = up()
             elif delta.direction == "down":
-                arrow = "[red]↓[/red]"
+                arrow = down()
             else:
-                arrow = "[dim]=[/dim]"
+                arrow = same()
 
             # Percent change
             pct_str = ""
