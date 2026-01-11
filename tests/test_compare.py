@@ -121,8 +121,9 @@ class TestCompareFormatting:
         assert "STEREO" in output
         assert "LOUDNESS" in output
 
-        # Should indicate no significant changes for identical files
-        assert "no significant changes" in output.lower()
+        # For identical files, should show "=" (unchanged) markers and +0 deltas
+        assert "=" in output  # Unchanged direction marker
+        assert "+0" in output  # Zero delta values
 
 
 class TestCompareCLI:
