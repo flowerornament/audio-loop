@@ -1,5 +1,32 @@
 # Project Milestones: audio-loop
 
+## v2.0 Analysis Upgrades (Shipped: 2026-01-11)
+
+**Delivered:** Faster iteration workflow with `iterate` command, spectrogram visualization, and real-world validation proving the tool works as a diagnostic
+
+**Phases completed:** 5-7 (4 plans + 1 validation session)
+
+**Key accomplishments:**
+- `audioloop iterate` command — single invocation for render→analyze→play workflow
+- Performance profiling identified MoSQITo loudness as bottleneck; sub-5s for 1-4s audio
+- Spectrogram PNG generation (waveform/mel-spectrogram/chromagram stacked)
+- ASCII frequency band visualization in terminal output
+- Unified CLI styling with semantic color system (layout.py)
+- Real-world validation: "Tool is diagnostic, not prescription" insight
+
+**Stats:**
+- 492 lines added (2,607 total Python)
+- 5 phases (including 2 inserted decimal phases), 4 plans
+- 3 days (2026-01-09 → 2026-01-11)
+
+**Git range:** `b57532d` (docs: create milestone v2.0) → `0283fba` (docs(07): capture phase context)
+
+**Key insight from validation:** The tool delivers objective acoustic data. Its value scales with the production/sound-design knowledge of the operator. Reference comparison workflow identified as particularly powerful.
+
+**What's next:** TBD — discuss next milestone
+
+---
+
 ## v1.1 Psychoacoustics (Shipped: 2026-01-09)
 
 **Delivered:** Perceptual audio metrics via MoSQITo/Zwicker model for loudness, sharpness, and roughness

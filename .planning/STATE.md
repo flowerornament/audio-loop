@@ -2,20 +2,19 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-01-09)
+See: .planning/PROJECT.md (updated 2026-01-11)
 
 **Core value:** Give Claude detailed acoustic measurements to reason about sound
-**Current focus:** v2.0 Analysis Upgrades - faster analysis, spectrogram visualization
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-**Milestone:** v2.0 Analysis Upgrades
-**Phase:** 6 of 8 (Spectrogram Visualization)
-**Plan:** 1 of 1 in current phase
-**Status:** Phase complete
-**Last activity:** 2026-01-11 - Completed 06-01-PLAN.md
+**Milestone:** v2.0 Analysis Upgrades SHIPPED
+**Phase:** All complete
+**Status:** Ready for next milestone
+**Last activity:** 2026-01-11 - v2.0 milestone completed
 
-Progress: █████████░ 67% (4/6 v2.0 phases)
+Progress: ██████████ 100% (all v2.0 phases complete)
 
 ## Phase Progress
 
@@ -31,14 +30,14 @@ Progress: █████████░ 67% (4/6 v2.0 phases)
 |-------|------|--------|----------|
 | 4 | Zwicker Model Integration | **complete** | completed |
 
-### v2.0 Analysis Upgrades (In Progress)
+### v2.0 Analysis Upgrades SHIPPED
 | Phase | Name | Status | Research |
 |-------|------|--------|----------|
 | 5 | Performance Optimization | **complete** | completed |
 | 5.1 | CLI Iterate Command | **complete** | n/a |
 | 5.2 | CLI Output UX Polish | **complete** | n/a |
 | 6 | Spectrogram Visualization | **complete** | completed |
-| 7 | Real-World Validation | Not started | Unlikely |
+| 7 | Real-World Validation | **complete** | n/a |
 
 ## Accumulated Decisions
 
@@ -48,16 +47,19 @@ See: `.planning/PROJECT.md` for full decision log with outcomes.
 
 ## Recent Activity
 
+- 2026-01-11: **v2.0 SHIPPED** - Analysis Upgrades milestone complete
+- 2026-01-11: **Phase 7 COMPLETE** - Real-world validation (findings doc)
 - 2026-01-11: **Phase 6 COMPLETE** - Spectrogram PNG + ASCII frequency bands
 - 2026-01-11: **Phase 5.2 COMPLETE** - Shared layout module, minimal design, yellow numbers
-- 2026-01-11: **Phase 5.2 INSERTED** - CLI output UX polish (table borders, formatting)
 - 2026-01-11: **Phase 5.1 COMPLETE** - iterate command with inline SC code support
-- 2026-01-11: **Phase 5.1 INSERTED** - CLI iterate command (urgent, from real-world testing)
 - 2026-01-11: **Phase 5 COMPLETE** - Performance profiling, benchmarks established
-- 2026-01-09: **v2.0 CREATED** - Analysis Upgrades milestone (3 phases)
 - 2026-01-09: **v1.1 SHIPPED** - Psychoacoustic metrics complete
-- 2026-01-09: Milestone 2 archived to milestones/v1.1-ROADMAP.md
-- 2026-01-09: Completed 04-02-PLAN.md - CLI psychoacoustic support
-- 2026-01-09: Completed 04-01-PLAN.md - Psychoacoustic metrics integrated
 - 2026-01-09: **v1.0 SHIPPED** - Working feedback loop complete
-- 2026-01-09: Milestone 1 archived to milestones/v1.0-ROADMAP.md
+
+## Validation Insights (v2.0)
+
+From real-world testing:
+- **`iterate` command essential** — single invocation vs 3 tool calls
+- **Reference comparison is powerful** — consider first-class support
+- **Tool is diagnostic, not prescription** — operator knowledge is the limiting factor
+- **Analyze reference FIRST** — should be standard workflow

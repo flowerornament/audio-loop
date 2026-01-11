@@ -292,6 +292,13 @@ Not v1 scope, but worth considering if the core loop proves valuable.
 
 ## Requirements
 
+### Validated (v2.0)
+- [x] `audioloop iterate` - unified render→analyze→play workflow — v2.0
+- [x] `audioloop analyze --spectrogram` - PNG spectrogram generation — v2.0
+- [x] ASCII frequency band visualization in human output — v2.0
+- [x] Unified CLI styling with semantic colors (layout.py) — v2.0
+- [x] Real-world validation completed — v2.0
+
 ### Validated (v1.1)
 - [x] Psychoacoustic metrics (loudness, sharpness, roughness via MoSQITo) — v1.1
 - [x] `--no-psychoacoustic` flag for faster analysis — v1.1
@@ -304,9 +311,8 @@ Not v1 scope, but worth considering if the core loop proves valuable.
 - [x] `audioloop compare` - side-by-side delta analysis
 - [x] JSON output for all commands
 
-### Active (v2.0+)
-- [ ] `audioloop analyze --spectrogram` - spectrogram image generation
-- [ ] Reference sound comparison
+### Active (Future)
+- [ ] Reference sound comparison (identified as powerful in v2.0 validation)
 
 ## Out of Scope
 
@@ -333,14 +339,16 @@ You can describe sounds with varying complexity and Claude reliably produces som
 **Stretch:**
 Iteration usually converges in 1-3 attempts. Claude handles complex multi-element descriptions ("techno kick with sidechain pumping on a pad").
 
-## Current State (v1.1)
+## Current State (v2.0)
 
-- **Shipped:** 2026-01-09
-- **LOC:** 2,115 Python
-- **Tech stack:** Python/typer/rich, librosa, MoSQITo, SuperCollider (NRT mode)
-- **Commands:** render, analyze, play, compare
-- **Tests:** 65 pytest tests
-- **New in v1.1:** Psychoacoustic metrics (loudness/sones, sharpness/acum, roughness/asper)
+- **Shipped:** 2026-01-11
+- **LOC:** 2,607 Python
+- **Tech stack:** Python/typer/rich, librosa, MoSQITo, matplotlib, SuperCollider (NRT mode)
+- **Commands:** render, analyze, play, compare, iterate
+- **Tests:** 80+ pytest tests
+- **New in v2.0:** iterate command, spectrogram visualization, semantic CLI styling
+
+**Validation insight:** The tool works as a diagnostic — it surfaces acoustic data that helps identify gaps between attempts and targets. Its value scales with the operator's production/sound-design knowledge.
 
 ## Key Decisions
 
@@ -355,6 +363,11 @@ Iteration usually converges in 1-3 attempts. Claude handles complex multi-elemen
 | Direct MoSQITo function API | Simpler than Audio class for single-file analysis | Good |
 | Lazy import MoSQITo | Graceful fallback when not installed | Good |
 | --no-psychoacoustic flag | Opt-out pattern clearer than opt-in | Good |
+| Serial computation for MoSQITo | Parallelization overhead exceeded benefit (v2.0 profiling) | Good |
+| JSON default for iterate command | Claude is primary user; direct parsing | Good |
+| Stacked 3-subplot spectrogram | Waveform/mel/chroma with shared x-axis | Good |
+| 6 frequency bands for ASCII | Matches audio engineering conventions | Good |
+| Semantic style functions (layout.py) | Style by meaning not color; single source of truth | Good |
 
 ---
-*Last updated: 2026-01-09 after v1.1 milestone*
+*Last updated: 2026-01-11 after v2.0 milestone*
