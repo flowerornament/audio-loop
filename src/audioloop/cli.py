@@ -535,8 +535,8 @@ def iterate(
         play_error = None
         if not no_play:
             try:
-                if not use_json:
-                    console.print(f"Playing: {output_path}")
+                # Always warn before playing (to stderr so it doesn't affect JSON)
+                error_console.print("[yellow]🔊 Playing audio...[/yellow]")
                 play_audio(output_path)
                 played = True
             except PlaybackError as e:
