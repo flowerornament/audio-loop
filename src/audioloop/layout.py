@@ -17,6 +17,11 @@ def num(value: str) -> str:
     return f"[yellow]{value}[/yellow]"
 
 
+def path(value: str) -> str:
+    """Style a file path."""
+    return f"[magenta]{value}[/magenta]"
+
+
 def up() -> str:
     """Direction indicator: increased."""
     return "[green]↑[/green]"

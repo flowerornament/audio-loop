@@ -9,7 +9,7 @@ from io import StringIO
 from rich.console import Console
 
 from audioloop.analyze import AnalysisResult
-from audioloop.layout import section, row, row3, num
+from audioloop.layout import section, row, row3, num, path
 
 
 def interpret_centroid(hz: float) -> str:
@@ -210,7 +210,7 @@ def _render_analysis_tables(result: AnalysisResult, console: Console) -> None:
     """
     # FILE INFO section
     section(console, "FILE INFO")
-    row(console, "File", result.file)
+    row(console, "File", path(result.file))
     row(console, "Duration", f"{num(f'{result.duration_sec:.2f}')}s")
     row(console, "Sample Rate", f"{num(str(result.sample_rate))} Hz")
     row(console, "Channels", num(str(result.channels)))

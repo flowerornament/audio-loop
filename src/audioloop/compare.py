@@ -12,7 +12,7 @@ from typing import Literal
 from rich.console import Console
 
 from audioloop.analyze import analyze, AnalysisError
-from audioloop.layout import INDENT, section, up, down, same
+from audioloop.layout import INDENT, section, up, down, same, path, num
 
 
 # Direction and significance interpretations for common metrics
@@ -290,9 +290,9 @@ def print_comparison_human(result: ComparisonResult, console: Console) -> None:
         console: Rich Console to print to.
     """
     # Header
-    console.print(f"[bold]Comparison:[/bold] {result.file_a} -> {result.file_b}", highlight=False)
+    console.print(f"[bold]Comparison:[/bold] {path(result.file_a)} -> {path(result.file_b)}", highlight=False)
     console.print(
-        f"Duration: {result.duration_a:.2f}s -> {result.duration_b:.2f}s", highlight=False
+        f"Duration: {num(f'{result.duration_a:.2f}')}s -> {num(f'{result.duration_b:.2f}')}s", highlight=False
     )
     console.print()
 
