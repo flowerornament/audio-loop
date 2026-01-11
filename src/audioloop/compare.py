@@ -348,17 +348,17 @@ def print_comparison_human(result: ComparisonResult, console: Console) -> None:
 
             # Value formatting based on magnitude
             if abs(delta.value_a) > 100:
-                val_a_str = f"{delta.value_a:.0f}"
-                val_b_str = f"{delta.value_b:.0f}"
-                delta_str = f"{delta.delta:+.0f}"
+                val_a_str = num(f"{delta.value_a:.0f}")
+                val_b_str = num(f"{delta.value_b:.0f}")
+                delta_str = num(f"{delta.delta:+.0f}")
             elif abs(delta.value_a) > 1:
-                val_a_str = f"{delta.value_a:.2f}"
-                val_b_str = f"{delta.value_b:.2f}"
-                delta_str = f"{delta.delta:+.2f}"
+                val_a_str = num(f"{delta.value_a:.2f}")
+                val_b_str = num(f"{delta.value_b:.2f}")
+                delta_str = num(f"{delta.delta:+.2f}")
             else:
-                val_a_str = f"{delta.value_a:.4f}"
-                val_b_str = f"{delta.value_b:.4f}"
-                delta_str = f"{delta.delta:+.4f}"
+                val_a_str = num(f"{delta.value_a:.4f}")
+                val_b_str = num(f"{delta.value_b:.4f}")
+                delta_str = num(f"{delta.delta:+.4f}")
 
             if unit:
                 val_a_str += f" {unit}"
