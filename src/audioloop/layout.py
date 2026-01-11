@@ -40,7 +40,7 @@ def section(console: Console, title: str) -> None:
         title: Section title text.
     """
     dashes = "─" * (50 - len(title))
-    console.print(f"{INDENT}─── {title} {dashes}")
+    console.print(f"{INDENT}─── {title} {dashes}", highlight=False)
 
 
 def row(console: Console, label: str, value: str) -> None:
@@ -51,7 +51,7 @@ def row(console: Console, label: str, value: str) -> None:
         label: Row label.
         value: Row value.
     """
-    console.print(f"{INDENT}{label:<{LABEL_WIDTH}} {value}")
+    console.print(f"{INDENT}{label:<{LABEL_WIDTH}} {value}", highlight=False)
 
 
 def row3(console: Console, label: str, left: str, right: str) -> None:
@@ -63,4 +63,4 @@ def row3(console: Console, label: str, left: str, right: str) -> None:
         left: Left channel value.
         right: Right channel value.
     """
-    console.print(f"{INDENT}{label:<{LABEL_WIDTH}} {left:<{VALUE_WIDTH}} {right}")
+    console.print(f"{INDENT}{label:<{LABEL_WIDTH}} {left:<{VALUE_WIDTH}} {right}", highlight=False)

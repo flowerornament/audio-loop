@@ -290,9 +290,9 @@ def print_comparison_human(result: ComparisonResult, console: Console) -> None:
         console: Rich Console to print to.
     """
     # Header
-    console.print(f"[bold]Comparison:[/bold] {result.file_a} -> {result.file_b}")
+    console.print(f"[bold]Comparison:[/bold] {result.file_a} -> {result.file_b}", highlight=False)
     console.print(
-        f"Duration: {result.duration_a:.2f}s -> {result.duration_b:.2f}s"
+        f"Duration: {result.duration_a:.2f}s -> {result.duration_b:.2f}s", highlight=False
     )
     console.print()
 
@@ -378,13 +378,13 @@ def print_comparison_human(result: ComparisonResult, console: Console) -> None:
             if delta.percent_change is not None and abs(delta.percent_change) < 10000:
                 pct_str = f" ({delta.percent_change:+.1f}%)"
 
-            console.print(f"{INDENT}{metric_name:<18} {val_a_str:<12} → {val_b_str:<12} {arrow} {delta_str}{pct_str}")
+            console.print(f"{INDENT}{metric_name:<18} {val_a_str:<12} → {val_b_str:<12} {arrow} {delta_str}{pct_str}", highlight=False)
 
         console.print()
 
     # Summary
     if result.summary.get("interpretations"):
-        console.print("[bold]Summary:[/bold]", ", ".join(result.summary["interpretations"]))
+        console.print("[bold]Summary:[/bold]", ", ".join(result.summary["interpretations"]), highlight=False)
 
 
 def format_comparison_human(result: ComparisonResult) -> str:
