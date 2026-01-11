@@ -559,11 +559,12 @@ def iterate(
             print(json.dumps(output_data, indent=2))
         else:
             console.print(f"[green]✓ Rendered:[/green] {output_path} ({render_result.duration_sec:.2f}s)")
-            console.print(f"[green]✓ Analyzed:[/green] Loudness: {analysis_result.loudness_lufs:.1f} LUFS")
             if played:
                 console.print("[green]✓ Played[/green]")
             elif play_error:
                 error_console.print(f"[yellow]⚠ Playback failed:[/yellow] {play_error}")
+            console.print()
+            console.print(format_analysis_human(analysis_result))
 
     finally:
         # Cleanup temp files
