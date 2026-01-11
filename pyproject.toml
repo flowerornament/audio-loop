@@ -36,9 +36,14 @@ dependencies = [
 psychoacoustic = [
     "mosqito>=1.2.0",
 ]
+mcp = [
+    "mcp[cli]>=1.25.0",
+    "pydantic>=2.0",
+]
 dev = [
     "pytest>=7.0.0",
     "pytest-cov",
+    "pytest-anyio",
 ]
 
 [project.scripts]
