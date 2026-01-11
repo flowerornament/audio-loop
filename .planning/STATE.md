@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-01-11)
 
 **Milestone:** v2.1 MCP Integration
 **Phase:** 8 of 10 (MCP Server)
-**Status:** Ready to plan
-**Last activity:** 2026-01-11 - Milestone v2.1 created
+**Status:** Plan 01 complete, continuing
+**Last activity:** 2026-01-11 - Plan 08-01 completed (MCP infrastructure)
 
-Progress: ░░░░░░░░░░ 0%
+Progress: █░░░░░░░░░ 10%
 
 ## Phase Progress
 
@@ -42,7 +42,7 @@ Progress: ░░░░░░░░░░ 0%
 ### v2.1 MCP Integration (in progress)
 | Phase | Name | Status | Research |
 |-------|------|--------|----------|
-| 8 | MCP Server | not started | needed |
+| 8 | MCP Server | **in progress** (1/3 plans) | completed |
 | 9 | Skill Definition | not started | n/a |
 | 10 | Spectrogram Validation | not started | n/a |
 
@@ -54,6 +54,7 @@ See: `.planning/PROJECT.md` for full decision log with outcomes.
 
 ## Recent Activity
 
+- 2026-01-11: **Plan 08-01 COMPLETE** - MCP infrastructure (deps, models, server skeleton)
 - 2026-01-11: **v2.1 CREATED** - MCP Integration milestone (3 phases: 8-10)
 - 2026-01-11: **v2.0 SHIPPED** - Analysis Upgrades milestone complete
 - 2026-01-11: **Phase 7 COMPLETE** - Real-world validation (findings doc)

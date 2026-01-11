@@ -17,12 +17,14 @@
 
 **Goal**: Create Python MCP server wrapping audioloop CLI with full tool schemas
 **Depends on**: v2.0 complete
-**Research**: Likely (MCP protocol, Python SDK, tool schema patterns)
+**Research**: Completed
 **Research topics**: MCP protocol specification, Python MCP server implementation, tool schema best practices
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 08-01: TBD (run /gsd:plan-phase 8 to break down)
+- [x] 08-01: MCP Infrastructure Setup (dependencies, models, server skeleton)
+- [ ] 08-02: Core MCP Tools (render, analyze tools)
+- [ ] 08-03: Advanced MCP Tools (iterate, compare, spectrogram image)
 
 #### Phase 9: Skill Definition
 
@@ -102,10 +104,10 @@ Plans:
 | 5.2 CLI Output UX Polish | v2.0 | 1/1 | Complete | 2026-01-11 |
 | 6. Spectrogram Visualization | v2.0 | 1/1 | Complete | 2026-01-11 |
 | 7. Real-World Validation | v2.0 | N/A | Complete | 2026-01-11 |
-| 8. MCP Server | v2.1 | 0/? | Not started | - |
+| 8. MCP Server | v2.1 | 1/3 | In progress | - |
 | 9. Skill Definition | v2.1 | 0/? | Not started | - |
 | 10. Spectrogram Validation | v2.1 | 0/? | Not started | - |
 
 ---
 
-*Last updated: 2026-01-11 after v2.1 milestone creation*
+*Last updated: 2026-01-11 after Plan 08-01 completion*
