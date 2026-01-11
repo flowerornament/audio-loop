@@ -9,6 +9,7 @@ from io import StringIO
 from pathlib import Path
 from typing import Literal
 
+from rich import box
 from rich.console import Console
 from rich.table import Table
 
@@ -331,7 +332,7 @@ def print_comparison_human(result: ComparisonResult, console: Console) -> None:
         else:
             title += " [dim](no significant changes)[/dim]"
 
-        table = Table(title=title, show_header=True)
+        table = Table(title=title, show_header=True, box=box.SIMPLE)
         table.add_column("Feature", style="dim")
         table.add_column("A")
         table.add_column("B")

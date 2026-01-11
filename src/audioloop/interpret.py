@@ -6,6 +6,7 @@ These are reference ranges, not judgments - interpretation depends on context.
 
 from io import StringIO
 
+from rich import box
 from rich.console import Console
 from rich.table import Table
 
@@ -210,7 +211,7 @@ def _render_analysis_tables(result: AnalysisResult, console: Console) -> None:
     """
 
     # FILE INFO section
-    info_table = Table(title="FILE INFO", show_header=False, box=None)
+    info_table = Table(title="FILE INFO", show_header=False, box=box.SIMPLE)
     info_table.add_column("Key", style="dim")
     info_table.add_column("Value")
 
@@ -223,7 +224,7 @@ def _render_analysis_tables(result: AnalysisResult, console: Console) -> None:
     console.print()
 
     # SPECTRAL section - L/R columns (keep header to show Left/Right)
-    spectral_table = Table(title="SPECTRAL", box=None)
+    spectral_table = Table(title="SPECTRAL", box=box.SIMPLE)
     spectral_table.add_column("Feature", style="dim")
     spectral_table.add_column("Left")
     spectral_table.add_column("Right")
@@ -256,7 +257,7 @@ def _render_analysis_tables(result: AnalysisResult, console: Console) -> None:
     console.print()
 
     # DYNAMICS section
-    dynamics_table = Table(title="DYNAMICS", show_header=False, box=None)
+    dynamics_table = Table(title="DYNAMICS", show_header=False, box=box.SIMPLE)
     dynamics_table.add_column("Feature", style="dim")
     dynamics_table.add_column("Value")
 
@@ -270,7 +271,7 @@ def _render_analysis_tables(result: AnalysisResult, console: Console) -> None:
     console.print()
 
     # STEREO section
-    stereo_table = Table(title="STEREO", show_header=False, box=None)
+    stereo_table = Table(title="STEREO", show_header=False, box=box.SIMPLE)
     stereo_table.add_column("Feature", style="dim")
     stereo_table.add_column("Value")
 
@@ -281,7 +282,7 @@ def _render_analysis_tables(result: AnalysisResult, console: Console) -> None:
     console.print()
 
     # LOUDNESS section
-    loudness_table = Table(title="LOUDNESS", show_header=False, box=None)
+    loudness_table = Table(title="LOUDNESS", show_header=False, box=box.SIMPLE)
     loudness_table.add_column("Feature", style="dim")
     loudness_table.add_column("Value")
 
@@ -292,7 +293,7 @@ def _render_analysis_tables(result: AnalysisResult, console: Console) -> None:
     # PSYCHOACOUSTIC section (if data available)
     if result.psychoacoustic:
         console.print()
-        psych_table = Table(title="PSYCHOACOUSTIC", show_header=False, box=None)
+        psych_table = Table(title="PSYCHOACOUSTIC", show_header=False, box=box.SIMPLE)
         psych_table.add_column("Feature", style="dim")
         psych_table.add_column("Value")
 
