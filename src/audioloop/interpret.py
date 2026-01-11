@@ -202,8 +202,8 @@ def format_analysis_human(result: AnalysisResult) -> str:
     console.print(info_table)
     console.print()
 
-    # SPECTRAL section - L/R columns
-    spectral_table = Table(title="SPECTRAL")
+    # SPECTRAL section - L/R columns (keep header to show Left/Right)
+    spectral_table = Table(title="SPECTRAL", box=None)
     spectral_table.add_column("Feature", style="dim")
     spectral_table.add_column("Left")
     spectral_table.add_column("Right")
