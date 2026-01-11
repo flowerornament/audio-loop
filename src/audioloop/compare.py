@@ -9,11 +9,10 @@ from io import StringIO
 from pathlib import Path
 from typing import Literal
 
-from rich import box
 from rich.console import Console
-from rich.table import Table
 
 from audioloop.analyze import analyze, AnalysisError
+from audioloop.layout import INDENT, section
 
 
 # Direction and significance interpretations for common metrics
@@ -328,16 +327,9 @@ def print_comparison_human(result: ComparisonResult, console: Console) -> None:
 
         title = cat_name.upper()
         if has_significant:
-            title += " [yellow](significant changes)[/yellow]"
-        else:
-            title += " [dim](no significant changes)[/dim]"
+            title += " (changes)"
 
-        table = Table(title=title, show_header=True, box=box.SIMPLE)
-        table.add_column("Feature", style="dim")
-        table.add_column("A")
-        table.add_column("B")
-        table.add_column("Change")
-        table.add_column("Interpretation")
+        section(console, title)
 
         for key, delta in cat_deltas:
             # Skip duration_sec from any category
@@ -381,19 +373,13 @@ def print_comparison_human(result: ComparisonResult, console: Console) -> None:
             else:
                 arrow = "[dim]=[/dim]"
 
-            change_str = f"{arrow} {delta_str}"
-            if delta.percent_change is not None:
-                change_str += f" ({delta.percent_change:+.1f}%)"
+            # Percent change
+            pct_str = ""
+            if delta.percent_change is not None and abs(delta.percent_change) < 10000:
+                pct_str = f" ({delta.percent_change:+.1f}%)"
 
-            # Highlight significant rows
-            if delta.significant:
-                metric_name = f"[yellow]{metric_name}[/yellow]"
+            console.print(f"{INDENT}{metric_name:<18} {val_a_str:<12} → {val_b_str:<12} {arrow} {delta_str}{pct_str}")
 
-            interp = delta.interpretation or ""
-
-            table.add_row(metric_name, val_a_str, val_b_str, change_str, interp)
-
-        console.print(table)
         console.print()
 
     # Summary
