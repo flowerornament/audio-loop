@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-11)
 
 **Core value:** Give Claude detailed acoustic measurements to reason about sound
-**Current focus:** Planning next milestone
+**Current focus:** v2.1 MCP Integration — Phase 8 MCP Server
 
 ## Current Position
 
-**Milestone:** v2.0 Analysis Upgrades SHIPPED
-**Phase:** All complete
-**Status:** Ready for next milestone
-**Last activity:** 2026-01-11 - v2.0 milestone completed
+**Milestone:** v2.1 MCP Integration
+**Phase:** 8 of 10 (MCP Server)
+**Status:** Ready to plan
+**Last activity:** 2026-01-11 - Milestone v2.1 created
 
-Progress: ██████████ 100% (all v2.0 phases complete)
+Progress: ░░░░░░░░░░ 0%
 
 ## Phase Progress
 
@@ -39,6 +39,13 @@ Progress: ██████████ 100% (all v2.0 phases complete)
 | 6 | Spectrogram Visualization | **complete** | completed |
 | 7 | Real-World Validation | **complete** | n/a |
 
+### v2.1 MCP Integration (in progress)
+| Phase | Name | Status | Research |
+|-------|------|--------|----------|
+| 8 | MCP Server | not started | needed |
+| 9 | Skill Definition | not started | n/a |
+| 10 | Spectrogram Validation | not started | n/a |
+
 ## Accumulated Decisions
 
 *Key decisions moved to PROJECT.md Key Decisions table*
@@ -47,6 +54,7 @@ See: `.planning/PROJECT.md` for full decision log with outcomes.
 
 ## Recent Activity
 
+- 2026-01-11: **v2.1 CREATED** - MCP Integration milestone (3 phases: 8-10)
 - 2026-01-11: **v2.0 SHIPPED** - Analysis Upgrades milestone complete
 - 2026-01-11: **Phase 7 COMPLETE** - Real-world validation (findings doc)
 - 2026-01-11: **Phase 6 COMPLETE** - Spectrogram PNG + ASCII frequency bands
