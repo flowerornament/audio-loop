@@ -23,6 +23,20 @@ This is the audio-loop project. See `.planning/PROJECT.md` for full context.
 
 These are living documents. Add to them.
 
+## Git Workflow
+
+This project uses both GSD (planning) and BD (issue tracking). They're complementary:
+
+**During GSD work:**
+- Commit per-task as tasks complete (GSD convention)
+- Commit metadata when plans complete
+
+**At session end:**
+- `bd sync` - syncs beads tracking to git
+- `git push` - pushes everything to remote
+
+The BD "session close protocol" is generic. When using GSD, most commits happen during work, so session end is just sync + push. If you did ad-hoc work outside GSD, commit that first.
+
 ## Planning Workflow
 
 Before planning a phase, check if research has been completed:
