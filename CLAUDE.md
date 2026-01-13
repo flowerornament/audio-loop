@@ -18,8 +18,13 @@ This is the audio-loop project. See `.planning/PROJECT.md` for full context.
 
 ## Reference Docs
 
+**Quick reference (root):**
 - `SOUND_DESIGN.md` - Creative approaches and mixing notes
 - `SUPERCOLLIDER.md` - SC idioms and patterns
+
+**Deep context (`.learnings/`):**
+- `sound-design-journal.md` - Chronological session logs with detailed learnings
+- `VISION.md` - Future directions and architectural ideas
 
 These are living documents. Add to them.
 

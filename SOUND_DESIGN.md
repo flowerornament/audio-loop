@@ -54,9 +54,37 @@ Pushing vibrato ranges far beyond subtle pitch wobble (e.g., `freq * LFNoise1.kr
 ### Saturation before limiting
 Running hot into `.tanh` or similar before the limiter adds glue.
 
+## Artist-Specific Approaches
+
+### Caterina Barbieri style
+- **Repetition over variation**: 4-8 note patterns cycling hypnotically
+- **Negative counterpoint**: Full pattern exists, random gates subtract notes (85-95% gate probability)
+- **Two oscillators, distinct roles**: Harmonic oscillator for melody, DPO for texture
+- **Delay as counterpoint**: >300ms delays become independent voices
+- **Cross-modulation**: Everything modulates something (Maths→Maths rate, etc.)
+- Reference: centroid ~2500 Hz, flatness <0.002
+
+### Florian Hecker style
+- **Anti-periodicity**: No Impulse, no regular LFOs - use Dust, LFNoise
+- **Temporal rupture**: Latch.ar for stairstepping, random gates for cuts
+- **Gendy caveat**: Spectrally chaotic but temporally smooth - add ruptures for roughness
+
+## Metric Interpretation
+
+| Metric | Low | High | Notes |
+|--------|-----|------|-------|
+| Centroid | dark | bright | Barbieri ~2500Hz, warm pads ~600Hz |
+| Roughness | smooth | gritty | Fire needs >1.5 asper |
+| Flatness | tonal | noisy | <0.01 for pitched content |
+
+## Key Learning: First Attempts Often Best
+
+Observed across sessions: later iterations frequently sound worse despite "better" metrics. When something sounds right, stop. Don't chase numbers.
+
 ## Notes for Future Agents
 
 - These are options, not requirements
 - Add your own learnings to this file
 - What works depends heavily on context and user intent
 - Ask the user what direction they want before assuming
+- See `.learnings/sound-design-journal.md` for session histories

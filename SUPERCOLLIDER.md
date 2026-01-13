@@ -82,8 +82,47 @@ freq * [1, 1.005]  // detune for width
 - **SynthDef not found?** Run the SynthDef block first, check for syntax errors
 - **Rate mismatch?** Use `.ar` triggers for `.ar` UGens (e.g., `Dust.ar` not `Dust.kr` for `Ringz.ar`)
 
+## Synthesis Directions to Explore
+
+### Additive / harmonic
+Building timbres from sine partials. Explore: spectral weighting (which harmonics dominate), dynamic control per-partial, slow modulation of harmonic balance. Real harmonic oscillators have complex nonlinear interactions between controls - simple additive mixing is a starting point, not a destination.
+
+### Filter-amplitude coupling
+West Coast LPGs couple filter cutoff to amplitude via vactrols, creating organic "pluck" character. The vactrol's nonlinear response and natural decay ("ring") is the soul of the sound. Explore: different lag curves, filter types, how strike velocity affects both brightness and loudness simultaneously.
+
+### FM and complex oscillators
+Frequency modulation creates rich harmonic spectra. Dual oscillators with cross-modulation, linear vs exponential FM, modulation index as a timbral control. The relationship between carrier, modulator, and index determines everything - small changes create dramatically different results.
+
+### Stochastic / aperiodic
+Gendy (Xenakis) generates waveforms stochastically. Key insight: Gendy is spectrally chaotic but temporally smooth - it doesn't inherently create roughness. For temporal disruption, explore: sample-and-hold on signals, random gates that cut audio, bit reduction, deliberate discontinuities.
+
+### Modulation depth
+What makes modular synthesis feel "alive" is cross-modulation - parameters modulating other parameters, including modulation rates themselves. Explore: slow modulation of fast modulation rates, random sources affecting multiple destinations, feedback in modulation paths.
+
+## NRT Mode Gotchas
+
+### Variable declarations first
+```supercollider
+// WRONG - "unexpected VAR" error
+{ var x = 1; x = x + 1; var y = 2; }
+
+// RIGHT
+{ var x, y; x = 1; x = x + 1; y = 2; }
+```
+
+### Rand() fixed at compile time
+```supercollider
+// L/R will be identical in NRT
+[Rand(0,1), Rand(0,1)]  // same value!
+// Use TRand.kr instead
+```
+
+### Complexity limits
+~200 UGens max, ~10-12 voices per Mix.fill, ~6 layers total
+
 ## Notes
 
 - These are reference patterns, not requirements
 - SC is flexible - there are many valid approaches
 - Add patterns you discover to this file
+- See `.learnings/sound-design-journal.md` for session context
